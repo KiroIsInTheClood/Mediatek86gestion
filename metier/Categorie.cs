@@ -17,7 +17,7 @@ namespace Mediatek86.metier
         public string Libelle { get => libelle; }
 
         /// <summary>
-        /// Récupération du libellé pour l'affichage dans les combos
+        /// Récupération du libellé
         /// </summary>
         /// <returns></returns>
         public override string ToString()

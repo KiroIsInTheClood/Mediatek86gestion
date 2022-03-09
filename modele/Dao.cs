@@ -1,8 +1,7 @@
-﻿using Mediatek86.metier;
-using System.Collections.Generic;
-using Mediatek86.bdd;
+﻿using Mediatek86.bdd;
+using Mediatek86.metier;
 using System;
-using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Mediatek86.modele
 {
@@ -13,7 +12,7 @@ namespace Mediatek86.modele
         private static readonly string userid = "root";
         private static readonly string password = "";
         private static readonly string database = "mediatek86";
-        private static readonly string connectionString = "server="+server+";user id="+userid+";password="+password+";database="+database+";SslMode=none";
+        private static readonly string connectionString = "server=" + server + ";user id=" + userid + ";password=" + password + ";database=" + database + ";SslMode=none";
 
         /// <summary>
         /// Retourne tous les genres à partir de la BDD
@@ -110,7 +109,7 @@ namespace Mediatek86.modele
                 string genre = (string)curs.Field("genre");
                 string lepublic = (string)curs.Field("public");
                 string rayon = (string)curs.Field("rayon");
-                Livre livre = new Livre(id, titre, image, isbn, auteur, collection, idgenre, genre, 
+                Livre livre = new Livre(id, titre, image, isbn, auteur, collection, idgenre, genre,
                     idpublic, lepublic, idrayon, rayon);
                 lesLivres.Add(livre);
             }
@@ -257,10 +256,44 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 curs.Close();
                 return true;
-            }catch{
+            } catch {
                 return false;
             }
         }
 
+        /*public static List<CommandeDocument> GetCommandesDVD() {
+            
+        }*/
+
+        public static List<CommandeDocument> GetCommandesLivres() {
+            List<CommandeDocument> lesCommandes = null;
+            try
+            {
+                lesCommandes = new List<CommandeDocument>();
+                string req = "SELECT c.id as id_commande, c.dateCommande, c.montant, cd.nbExemplaire, cd.idLivreDvd as idLivre, d.titre, s.id as id_etat, s.libelle as etat FROM `commande`c LEFT JOIN `commandedocument` cd USING(id) LEFT JOIN `suivi` s ON s.id = cd.idSuivi LEFT JOIN `livre` l ON l.id = cd.idLivreDvd LEFT JOIN `document` d ON d.id=cd.idLivreDvd";
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqSelect(req, null);
+
+                while (curs.Read())
+                {
+                    CommandeDocument commandeDocument = new CommandeDocument(
+                        (string)curs.Field("id_commande"),
+                        (DateTime)curs.Field("dateCommande"),
+                        (double)curs.Field("montant"),
+                         (int)curs.Field("nbExemplaire"),
+                        (string)curs.Field("idLivre"),
+                        (string)curs.Field("titre"),
+                        Suivi.LibelleCmd((string)curs.Field("id_etat"))
+                        );
+                    lesCommandes.Add(commandeDocument);
+                }
+                curs.Close();
+                return lesCommandes;
+            }
+            catch (Exception e)
+            {
+                return lesCommandes;
+            }
+        }
     }
 }

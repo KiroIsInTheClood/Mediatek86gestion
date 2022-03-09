@@ -14,6 +14,7 @@ namespace Mediatek86.controleur
         private readonly List<Categorie> lesRayons;
         private readonly List<Categorie> lesPublics;
         private readonly List<Categorie> lesGenres;
+        private List<CommandeDocument> lesCommandes;
 
         /// <summary>
         /// Ouverture de la fenêtre
@@ -103,6 +104,17 @@ namespace Mediatek86.controleur
             return Dao.CreerExemplaire(exemplaire);
         }
 
+        /*public List<CommandeDocument> GetCommandesDVD()
+        {
+            Dao.GetCommandesDVD();
+            return lesCommandes;
+        }*/
+
+        public List<CommandeDocument> GetCommandesLivres()
+        {
+            lesCommandes = Dao.GetCommandesLivres();
+            return lesCommandes;
+        }
     }
 
 }

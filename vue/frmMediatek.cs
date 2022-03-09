@@ -23,7 +23,9 @@ namespace Mediatek86.vue
         private readonly BindingSource bdgRayons = new BindingSource();
         private readonly BindingSource bdgRevuesListe = new BindingSource();
         private readonly BindingSource bdgExemplairesListe = new BindingSource();
+        private readonly BindingSource bdgCommandesListe = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
+        private List<CommandeDocument> lesCommandes = new List<CommandeDocument>();
         private List<Dvd> lesDvd = new List<Dvd>();
         private List<Revue> lesRevues = new List<Revue>();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
@@ -1277,5 +1279,23 @@ namespace Mediatek86.vue
         }
 
         #endregion
+
+        #region Gestion de livres
+        private void tabGestionLivres_Enter(object sender, EventArgs e)
+        {
+            lesCommandes = controle.GetCommandesLivres();
+            InitDataGridViewLivre(lesCommandes);
+        }
+        private void InitDataGridViewLivre(List<CommandeDocument> documents)
+        {
+            bdgCommandesListe.DataSource = documents;
+            dgvLivresListeCommande.DataSource = bdgCommandesListe;
+        }
+        #endregion
+
+        private void FrmMediatek_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
