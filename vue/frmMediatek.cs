@@ -23,13 +23,17 @@ namespace Mediatek86.vue
         private readonly BindingSource bdgRayons = new BindingSource();
         private readonly BindingSource bdgRevuesListe = new BindingSource();
         private readonly BindingSource bdgExemplairesListe = new BindingSource();
-        private readonly BindingSource bdgCommandesListe = new BindingSource();
+        private readonly BindingSource bdgCommandesListeLivres = new BindingSource();
+        private readonly BindingSource bdgSuivisListe = new BindingSource();
+        private List<Suivi> lesSuivis = new List<Suivi>();
         private List<Livre> lesLivres = new List<Livre>();
-        private List<CommandeDocument> lesCommandes = new List<CommandeDocument>();
+        private List<CommandeDocumentLivre> lesCommandesLivre = new List<CommandeDocumentLivre>();
         private List<Dvd> lesDvd = new List<Dvd>();
         private List<Revue> lesRevues = new List<Revue>();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
 
+        private bool ajoutCommandeLivre = false;
+        private bool modifCommandeLivre = false;
         #endregion
 
 
@@ -79,6 +83,7 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllPublics(), bdgPublics, cbxRevuesPublics);
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxRevuesRayons);
             RemplirRevuesListeComplete();
+            BloquerAjtModifCommandeLivres();
         }
 
         /// <summary>
@@ -398,6 +403,7 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllPublics(), bdgPublics, cbxLivresPublics);
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
+            BloquerAjtModifCommandeLivres();
         }
 
         /// <summary>
@@ -716,6 +722,7 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllPublics(), bdgPublics, cbxDvdPublics);
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxDvdRayons);
             RemplirDvdListeComplete();
+            BloquerAjtModifCommandeLivres();
         }
 
         /// <summary>
@@ -1283,13 +1290,204 @@ namespace Mediatek86.vue
         #region Gestion de livres
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
-            lesCommandes = controle.GetCommandesLivres();
-            InitDataGridViewLivre(lesCommandes);
+            lesCommandesLivre = controle.GetCommandesLivres();
+            InitDataGridViewLivre(lesCommandesLivre);
+            RemplirComboBoxLivresCommande();
+            BloquerAjtModifCommandeLivres();
         }
-        private void InitDataGridViewLivre(List<CommandeDocument> documents)
+        private void InitDataGridViewLivre(List<CommandeDocumentLivre> livres)
         {
-            bdgCommandesListe.DataSource = documents;
-            dgvLivresListeCommande.DataSource = bdgCommandesListe;
+            bdgCommandesListeLivres.DataSource = livres;
+            dgvLivresListeCommande.DataSource = bdgCommandesListeLivres;
+            dgvLivresListeCommande.Columns["Id"].Visible = false;
+            dgvLivresListeCommande.Columns["IdLivDVD"].Visible = false;
+            dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
+            dgvLivresListeCommande.Columns["ISBN"].Visible = false;
+            dgvLivresListeCommande.Columns["Titre"].Visible = false;
+            dgvLivresListeCommande.Columns["Auteur"].Visible = false;
+            dgvLivresListeCommande.Columns["Collection"].Visible = false;
+            dgvLivresListeCommande.Columns["Genre"].Visible = false;
+            dgvLivresListeCommande.Columns["Public"].Visible = false;
+            dgvLivresListeCommande.Columns["Rayon"].Visible = false;
+            dgvLivresListeCommande.Columns["image"].Visible = false;
+
+            dgvLivresListeCommande.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        private void dgvLivresListeCommande_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvLivresListeCommande.CurrentCell != null)
+            {
+                try
+                {
+                    CommandeDocumentLivre commandeSelec = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+                    AfficheLivreCommandeInfos(commandeSelec);
+                    if (modifCommandeLivre)
+                    {
+                        RemplirModifCommandeLivre(commandeSelec);
+                    }
+                }
+                catch
+                {
+                    txbLivresNumeroRechercheCommande.Text = "";
+                }
+            }
+            else
+            {
+                VideLivresCommandeInfos();
+            }
+        }
+
+        private void AfficheLivreCommandeInfos(CommandeDocumentLivre livre)
+        {
+            string image = livre.Image;
+            txbLivresNumeroCommande.Text = livre.IdLivDVD;
+            txbLivresISBNCommande.Text = livre.ISBN;
+            txbLivresTitreCommande.Text = livre.Titre;
+            txbLivresAuteurCommande.Text = livre.Auteur;
+            txbLivresCollectionCommande.Text = livre.Collection;
+            txbLivresPublicCommande.Text = livre.Public;
+            txbLivresRayonCommande.Text = livre.Rayon;
+            txbLivresImageCommande.Text = image;
+            try
+            {
+                pcbLivresImageCommande.Image = Image.FromFile(image);
+            }
+            catch
+            {
+                pcbLivresImageCommande.Image = null;
+            }
+        }
+        private void VideLivresCommandeInfos()
+        {
+            txbLivresNumeroCommande.Text = "";
+            txbLivresISBNCommande.Text = "";
+            txbLivresTitreCommande.Text = "";
+            txbLivresAuteurCommande.Text = "";
+            txbLivresCollectionCommande.Text = "";
+            txbLivresPublicCommande.Text = "";
+            txbLivresRayonCommande.Text = "";
+            txbLivresImageCommande.Text = "";
+            pcbLivresImageCommande = null;
+        }
+        private void RechercherNumeroCommandeLivre_Click(object sender, EventArgs e)
+        {
+            if (!txbLivresNumeroRechercheCommande.Text.Equals(""))
+            {
+                CommandeDocumentLivre livre = lesCommandesLivre.Find(x => x.IdLivDVD.Equals(txbLivresNumeroRechercheCommande.Text));
+                txbLivresNumeroRechercheCommande.Text = "";
+                if (livre != null)
+                {
+                    List<CommandeDocumentLivre> livres = new List<CommandeDocumentLivre>();
+                    livres.Add(livre);
+                    lesCommandesLivre = livres;
+                    InitDataGridViewLivre(lesCommandesLivre);
+                }
+                else
+                {
+                    MessageBox.Show("Numéro introuvable");
+                    lesCommandesLivre = controle.GetCommandesLivres();
+                    InitDataGridViewLivre(lesCommandesLivre);
+                }
+            }
+            else
+            {
+                lesCommandesLivre = controle.GetCommandesLivres();
+                InitDataGridViewLivre(lesCommandesLivre);
+            }
+        }
+
+        public void RemplirComboBoxLivresCommande()
+        {
+            List<Livre> livres = controle.GetAllLivres();
+            bdgLivresListe.DataSource = livres;
+            cbxLivresCommande.DataSource = bdgLivresListe;
+            if (cbxLivresCommande.Items.Count > 0)
+            {
+                cbxLivresCommande.SelectedIndex = 0;
+            }
+
+            List<Suivi> document = controle.GetAllSuivis();
+            bdgSuivisListe.DataSource = document;
+            cbxSuiviLivresCommande.DataSource = bdgSuivisListe;
+            if (cbxSuiviLivresCommande.Items.Count > 0)
+            {
+                cbxSuiviLivresCommande.SelectedIndex = 0;
+            }
+        }
+
+        public void BloquerAjtModifCommandeLivres()
+        {
+            grpAjoutLivreCommande.Enabled = false;
+            grpModifLivreCommande.Enabled = false;
+        }
+        private void btnAjoutCommandeLivres_Click(object sender, EventArgs e)
+        {
+            grpAjoutLivreCommande.Enabled = true;
+            ajoutCommandeLivre = true;
+
+            if(modifCommandeLivre)
+            {
+                grpModifLivreCommande.Enabled = false;
+                modifCommandeLivre = false;
+                ViderModifCommandeLivre();
+            }
+        }
+
+        private void btnModifierCommandeLivres_Click(object sender, EventArgs e)
+        {
+
+            if (dgvLivresListeCommande.CurrentCell != null)
+            {
+                grpModifLivreCommande.Enabled = true;
+                modifCommandeLivre = true;
+
+                if (ajoutCommandeLivre)
+                {
+                    grpAjoutLivreCommande.Enabled = false;
+                    ajoutCommandeLivre = false;
+                    ViderAjouterCommandeLivre();
+                }
+
+                RemplirModifCommandeLivre((CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position]);
+            }
+            else
+            {
+                MessageBox.Show("Veuillez selectionner une commande", "Erreur");
+            }
+        }
+
+        private void btnSupprimerCommandeLivres_Click(object sender, EventArgs e)
+        {
+            if (dgvLivresListeCommande.CurrentCell != null)
+            {
+                //TODO
+            }
+            else
+            {
+                MessageBox.Show("Veuillez selectionner une commande", "Erreur");
+            }
+        }
+
+        private void RemplirModifCommandeLivre(CommandeDocumentLivre livre)
+        {
+            txtLivresIdCommandeModif.Text = livre.Id;
+            string etat = livre.Etat;
+            cbxSuiviLivresCommande.SelectedIndex = cbxSuiviLivresCommande.FindStringExact(etat);
+        }
+        private void ViderModifCommandeLivre()
+        {
+            txtLivresIdCommandeModif.Text = "";
+            cbxSuiviLivresCommande.SelectedIndex = 0;
+        }
+
+        private void ViderAjouterCommandeLivre()
+        {
+            txtLivresIdCommandeAjout.Text = "";
+            nbMontantLivresCommande.Value = 0;
+            dateLivreCommande.Value = DateTime.Now;
+            cbxLivresCommande.SelectedIndex = 0;
+            nbExemplairesLivresCommande.Value = 0;
         }
         #endregion
 

@@ -265,25 +265,42 @@ namespace Mediatek86.modele
             
         }*/
 
-        public static List<CommandeDocument> GetCommandesLivres() {
-            List<CommandeDocument> lesCommandes = null;
+        public static List<CommandeDocumentLivre> GetCommandesLivres() {
+            List<CommandeDocumentLivre> lesCommandes = null;
             try
             {
-                lesCommandes = new List<CommandeDocument>();
-                string req = "SELECT c.id as id_commande, c.dateCommande, c.montant, cd.nbExemplaire, cd.idLivreDvd as idLivre, d.titre, s.id as id_etat, s.libelle as etat FROM `commande`c LEFT JOIN `commandedocument` cd USING(id) LEFT JOIN `suivi` s ON s.id = cd.idSuivi LEFT JOIN `livre` l ON l.id = cd.idLivreDvd LEFT JOIN `document` d ON d.id=cd.idLivreDvd";
+                lesCommandes = new List<CommandeDocumentLivre>();
+                string req = "SELECT c.id as id_commande, c.dateCommande, c.montant, cd.nbExemplaire, cd.idLivreDvd as idLivre, s.id as id_etat, s.libelle as etat, ld.ISBN, d.titre, ld.auteur, ld.collection, g.libelle as genre, p.libelle as public, r.libelle as rayon, d.image ";
+                req += "FROM `commande` c ";
+                req += "LEFT JOIN `commandedocument` cd USING(id) ";
+                req += "LEFT JOIN `suivi` s ON s.id = cd.idSuivi ";
+                req += "LEFT JOIN `document` d ON d.id = cd.idLivreDvd ";
+                req += "LEFT JOIN `genre` g ON d.idGenre = g.id ";
+                req += "LEFT JOIN `public` p ON d.idPublic = p.id ";
+                req += "LEFT JOIN `rayon` r ON d.idRayon = r.id ";
+                req += "LEFT JOIN `livre` ld ON ld.id = cd.idLivreDvd ";
+                req += "ORDER BY c.dateCommande DESC";
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqSelect(req, null);
 
                 while (curs.Read())
                 {
-                    CommandeDocument commandeDocument = new CommandeDocument(
+                    CommandeDocumentLivre commandeDocument = new CommandeDocumentLivre(
                         (string)curs.Field("id_commande"),
                         (DateTime)curs.Field("dateCommande"),
                         (double)curs.Field("montant"),
-                         (int)curs.Field("nbExemplaire"),
+                        (int)curs.Field("nbExemplaire"),
                         (string)curs.Field("idLivre"),
+                        (string)curs.Field("id_etat"),
+                        (string)curs.Field("etat"),
+                        (string)curs.Field("ISBN"),
                         (string)curs.Field("titre"),
-                        Suivi.LibelleCmd((string)curs.Field("id_etat"))
+                        (string)curs.Field("auteur"),
+                        (string)curs.Field("collection"),
+                        (string)curs.Field("genre"),
+                        (string)curs.Field("public"),
+                        (string)curs.Field("rayon"),
+                        (string)curs.Field("image")
                         );
                     lesCommandes.Add(commandeDocument);
                 }
@@ -293,6 +310,33 @@ namespace Mediatek86.modele
             catch (Exception e)
             {
                 return lesCommandes;
+            }
+        }
+
+        public static List<Suivi> GetAllSuivis()
+        {
+            List<Suivi> lesSuivis = null;
+            try
+            {
+                lesSuivis = new List<Suivi>();
+                string req = "SELECT * FROM `suivi` ORDER BY libelle;";
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqSelect(req, null);
+
+                while (curs.Read())
+                {
+                    Suivi suivi = new Suivi(
+                        (string)curs.Field("id"),
+                        (string)curs.Field("libelle")
+                        );
+                    lesSuivis.Add(suivi);
+                }
+                curs.Close();
+                return lesSuivis;
+            }
+            catch (Exception e)
+            {
+                return lesSuivis;
             }
         }
     }

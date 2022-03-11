@@ -22,5 +22,9 @@ namespace Mediatek86.metier
         public string Auteur { get => auteur; }
         public string Collection { get => collection; }
 
+        public override string ToString()
+        {
+            return Titre;
+        }
     }
 }

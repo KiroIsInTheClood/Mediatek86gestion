@@ -14,7 +14,8 @@ namespace Mediatek86.controleur
         private readonly List<Categorie> lesRayons;
         private readonly List<Categorie> lesPublics;
         private readonly List<Categorie> lesGenres;
-        private List<CommandeDocument> lesCommandes;
+        private readonly List<CommandeDocumentLivre> lesCommandesLivres;
+        private readonly List<Suivi> lesSuivis;
 
         /// <summary>
         /// Ouverture de la fenêtre
@@ -27,6 +28,8 @@ namespace Mediatek86.controleur
             lesGenres = Dao.GetAllGenres();
             lesRayons = Dao.GetAllRayons();
             lesPublics = Dao.GetAllPublics();
+            lesCommandesLivres = Dao.GetCommandesLivres();
+            lesSuivis = Dao.GetAllSuivis();
             FrmMediatek frmMediatek = new FrmMediatek(this);
             frmMediatek.ShowDialog();
         }
@@ -110,10 +113,14 @@ namespace Mediatek86.controleur
             return lesCommandes;
         }*/
 
-        public List<CommandeDocument> GetCommandesLivres()
+        public List<CommandeDocumentLivre> GetCommandesLivres()
         {
-            lesCommandes = Dao.GetCommandesLivres();
-            return lesCommandes;
+            return lesCommandesLivres;
+        }
+
+        public List<Suivi> GetAllSuivis()
+        {
+            return lesSuivis;
         }
     }
 
