@@ -122,6 +122,11 @@ namespace Mediatek86.controleur
         {
             return lesSuivis;
         }
+
+        public void ModifierCommandeLivre(string idCommande, string idSuivi)
+        {
+            Dao.ModifierCommandeLivre(idCommande, idSuivi);
+        }
     }
 
 }

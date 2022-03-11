@@ -1290,18 +1290,18 @@ namespace Mediatek86.vue
         #region Gestion de livres
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
-            lesCommandesLivre = controle.GetCommandesLivres();
-            InitDataGridViewLivre(lesCommandesLivre);
+            InitDataGridViewLivreCommande();
             RemplirComboBoxLivresCommande();
             BloquerAjtModifCommandeLivres();
         }
-        private void InitDataGridViewLivre(List<CommandeDocumentLivre> livres)
+        private void InitDataGridViewLivreCommande()
         {
+            List<CommandeDocumentLivre> livres = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = livres;
             dgvLivresListeCommande.DataSource = bdgCommandesListeLivres;
             dgvLivresListeCommande.Columns["Id"].Visible = false;
             dgvLivresListeCommande.Columns["IdLivDVD"].Visible = false;
-            dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
+            //dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
             dgvLivresListeCommande.Columns["ISBN"].Visible = false;
             dgvLivresListeCommande.Columns["Titre"].Visible = false;
             dgvLivresListeCommande.Columns["Auteur"].Visible = false;
@@ -1381,19 +1381,19 @@ namespace Mediatek86.vue
                     List<CommandeDocumentLivre> livres = new List<CommandeDocumentLivre>();
                     livres.Add(livre);
                     lesCommandesLivre = livres;
-                    InitDataGridViewLivre(lesCommandesLivre);
+                    InitDataGridViewLivreCommande();
                 }
                 else
                 {
                     MessageBox.Show("Numéro introuvable");
                     lesCommandesLivre = controle.GetCommandesLivres();
-                    InitDataGridViewLivre(lesCommandesLivre);
+                    InitDataGridViewLivreCommande();
                 }
             }
             else
             {
                 lesCommandesLivre = controle.GetCommandesLivres();
-                InitDataGridViewLivre(lesCommandesLivre);
+                InitDataGridViewLivreCommande();
             }
         }
 
@@ -1455,6 +1455,29 @@ namespace Mediatek86.vue
             {
                 MessageBox.Show("Veuillez selectionner une commande", "Erreur");
             }
+        }
+
+        private void btnModifCompleteLivres_Click(object sender, EventArgs e)
+        {
+            Suivi suivi = (Suivi)bdgSuivisListe.List[bdgSuivisListe.Position];
+            string suiviId = suivi.Id;
+            string suiviLibelle = suivi.Libelle;
+            CommandeDocumentLivre leLivre = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+            if ((leLivre.Etat == "Réglée." || leLivre.Etat == "Livrée.") && ((suiviLibelle == "En cours.") || (suiviLibelle == "Relancée.")))
+            {
+                MessageBox.Show("Erreur : La commande est dans un stade trop avancé pour revenir a cet état", "Erreur");
+                RemplirModifCommandeLivre(leLivre);
+                return;
+            }
+            if(suiviLibelle == "Réglée." && leLivre.Etat != "Livrée.")
+            {
+                MessageBox.Show("Erreur : La commande ne peut etre réglée sans être livrée avant.", "Erreur");
+                RemplirModifCommandeLivre(leLivre);
+                return;
+            }
+
+            controle.ModifierCommandeLivre(leLivre.Id, suiviId);
+            InitDataGridViewLivreCommande();
         }
 
         private void btnSupprimerCommandeLivres_Click(object sender, EventArgs e)

@@ -339,5 +339,17 @@ namespace Mediatek86.modele
                 return lesSuivis;
             }
         }
+
+        public static void ModifierCommandeLivre(string idCommande, string idSuivi)
+        {
+            string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE commandedocument.id = @idCommande";
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    { "@idSuivi", idSuivi },
+                    { "@idCommande", idCommande}
+                };
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
     }
 }
