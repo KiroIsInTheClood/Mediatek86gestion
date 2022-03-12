@@ -1288,12 +1288,26 @@ namespace Mediatek86.vue
         #endregion
 
         #region Gestion de livres
+        /// <summary>
+        /// Quand on arrive sur l'onglet
+        /// 
+        /// Initialise la DataGridView
+        /// Remplit les ComboBox correspondantes aux livres dans Ajouter et aux differentes etapes de suivi dans Modifier
+        /// Disable les GroupBox d'ajout et de modification des commandes et met les booleans a false
+        /// Vide le contenu de la zone de modification au cas ou l'utilisateur a quitter l'onglet en pleine modification
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
             InitDataGridViewLivreCommande();
             RemplirComboBoxLivresCommande();
             BloquerAjtModifCommandeLivres();
+            ViderEditCommandeLivre();
         }
+        /// <summary>
+        /// Remplit la DataGridView et masque des colonnes
+        /// </summary>
         private void InitDataGridViewLivreCommande()
         {
             List<CommandeDocumentLivre> livres = controle.GetCommandesLivres();
@@ -1301,7 +1315,7 @@ namespace Mediatek86.vue
             dgvLivresListeCommande.DataSource = bdgCommandesListeLivres;
             dgvLivresListeCommande.Columns["Id"].Visible = false;
             dgvLivresListeCommande.Columns["IdLivDVD"].Visible = false;
-            //dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
+            dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
             dgvLivresListeCommande.Columns["ISBN"].Visible = false;
             dgvLivresListeCommande.Columns["Titre"].Visible = false;
             dgvLivresListeCommande.Columns["Auteur"].Visible = false;
@@ -1314,6 +1328,14 @@ namespace Mediatek86.vue
             dgvLivresListeCommande.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
+        /// <summary>
+        /// Quand la selection de ligne est changée (marche aussi quand on arrive sur la page)
+        /// Les informations du livre sont remplies dans les champs correspondants
+        /// 
+        /// Si aucune ligne n'est selectionnée, on vide tout les champs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgvLivresListeCommande_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvLivresListeCommande.CurrentCell != null)
@@ -1338,6 +1360,10 @@ namespace Mediatek86.vue
             }
         }
 
+        /// <summary>
+        /// Affiche les infos du livre envoyé dans les champs
+        /// </summary>
+        /// <param name="livre"></param>
         private void AfficheLivreCommandeInfos(CommandeDocumentLivre livre)
         {
             string image = livre.Image;
@@ -1358,6 +1384,10 @@ namespace Mediatek86.vue
                 pcbLivresImageCommande.Image = null;
             }
         }
+
+        /// <summary>
+        /// Vide tout les champs correspondant aux livres
+        /// </summary>
         private void VideLivresCommandeInfos()
         {
             txbLivresNumeroCommande.Text = "";
@@ -1370,6 +1400,12 @@ namespace Mediatek86.vue
             txbLivresImageCommande.Text = "";
             pcbLivresImageCommande = null;
         }
+
+        /// <summary>
+        /// Permet de trouver toutes les commandes pour un id de livre correspondant
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RechercherNumeroCommandeLivre_Click(object sender, EventArgs e)
         {
             if (!txbLivresNumeroRechercheCommande.Text.Equals(""))
@@ -1397,6 +1433,9 @@ namespace Mediatek86.vue
             }
         }
 
+        /// <summary>
+        /// Remplit les ComboBox correspondantes avec les tout les Livres et Etats possibles
+        /// </summary>
         public void RemplirComboBoxLivresCommande()
         {
             List<Livre> livres = controle.GetAllLivres();
@@ -1416,11 +1455,24 @@ namespace Mediatek86.vue
             }
         }
 
+        /// <summary>
+        /// Disable les groupes et met les booleans a false
+        /// </summary>
         public void BloquerAjtModifCommandeLivres()
         {
             grpAjoutLivreCommande.Enabled = false;
             grpModifLivreCommande.Enabled = false;
+            ajoutCommandeLivre = false;
+            modifCommandeLivre = false;
         }
+
+        /// <summary>
+        /// Active la GroupBox correspondante et met le boolean a true
+        /// 
+        /// Si une commande est en cours de modif, elle desactive et vide la GroupBox de modification
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAjoutCommandeLivres_Click(object sender, EventArgs e)
         {
             grpAjoutLivreCommande.Enabled = true;
@@ -1430,15 +1482,32 @@ namespace Mediatek86.vue
             {
                 grpModifLivreCommande.Enabled = false;
                 modifCommandeLivre = false;
-                ViderModifCommandeLivre();
+                ViderEditCommandeLivre();
             }
         }
 
+        /// <summary>
+        /// Si aucune ligne n'est séléctionner, l'utilisateur en est informé
+        /// 
+        /// Active la GroupBox correspondante et met le boolean sur true
+        /// Si un ajout étais en cours, la GroupBox est vidée et disabled
+        /// 
+        /// Remplit la zone de modification
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnModifierCommandeLivres_Click(object sender, EventArgs e)
         {
 
             if (dgvLivresListeCommande.CurrentCell != null)
             {
+                CommandeDocumentLivre laCommande = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+                if (laCommande.Etat == "Réglée.")
+                {
+                    MessageBox.Show("Cette commande est déja réglée, impossible de retourner en arrière", "Erreur");
+                    return;
+                }
+
                 grpModifLivreCommande.Enabled = true;
                 modifCommandeLivre = true;
 
@@ -1457,29 +1526,68 @@ namespace Mediatek86.vue
             }
         }
 
+        /// <summary>
+        /// Si la commande est dans un état trop avancé (Livré ou Réglé) on ne peut pas selectionner changer la valeur a "En cours." ou "Rélancée."
+        /// L'état d'une commande ne peut etre changer sur livrée seulement si la commande a été réglée avant
+        /// 
+        /// Update les valeurs dans la BDD et actualise la DataGridView
+        /// Disable le groupe et vide tout les champs
+        /// Met le boolean a false
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnModifCompleteLivres_Click(object sender, EventArgs e)
         {
             Suivi suivi = (Suivi)bdgSuivisListe.List[bdgSuivisListe.Position];
             string suiviId = suivi.Id;
             string suiviLibelle = suivi.Libelle;
-            CommandeDocumentLivre leLivre = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
-            if ((leLivre.Etat == "Réglée." || leLivre.Etat == "Livrée.") && ((suiviLibelle == "En cours.") || (suiviLibelle == "Relancée.")))
+            CommandeDocumentLivre laCommande = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+            if ((laCommande.Etat == "Réglée." || laCommande.Etat == "Livrée.") && ((suiviLibelle == "En cours.") || (suiviLibelle == "Relancée.")))
             {
-                MessageBox.Show("Erreur : La commande est dans un stade trop avancé pour revenir a cet état", "Erreur");
-                RemplirModifCommandeLivre(leLivre);
+                MessageBox.Show("La commande est dans un stade trop avancé pour revenir a cet état", "Erreur");
+                RemplirModifCommandeLivre(laCommande);
                 return;
             }
-            if(suiviLibelle == "Réglée." && leLivre.Etat != "Livrée.")
+            if(suiviLibelle == "Réglée." && laCommande.Etat != "Livrée.")
             {
-                MessageBox.Show("Erreur : La commande ne peut etre réglée sans être livrée avant.", "Erreur");
-                RemplirModifCommandeLivre(leLivre);
+                MessageBox.Show("La commande ne peut etre réglée sans être livrée avant.", "Erreur");
+                RemplirModifCommandeLivre(laCommande);
                 return;
             }
 
-            controle.ModifierCommandeLivre(leLivre.Id, suiviId);
+            controle.ModifierCommandeLivre(laCommande.Id, suiviId);
             InitDataGridViewLivreCommande();
+            ViderEditCommandeLivre();
+            modifCommandeLivre = false;
+            grpModifLivreCommande.Enabled = false;
         }
 
+        /// <summary>
+        /// Si on annule l'edition d'une commande, les infos dans les groupe sont vidées, le groupe est disable et le boolean est set à false
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAnnulerEditCommandLivre_Click(object sender, EventArgs e)
+        {
+            ViderEditCommandeLivre();
+            modifCommandeLivre = false;
+            grpModifLivreCommande.Enabled = false;
+        }
+
+        /// <summary>
+        /// Vide le contenu de la GroupBox d'édition
+        /// </summary>
+        private void ViderEditCommandeLivre()
+        {
+            txtCommandeIdCommandeModif.Text = "";
+            cbxSuiviLivresCommande.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Supprime la commande séléctionée dans la BDD après acceptation par l'utilisateur et actualise la DataGridView
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSupprimerCommandeLivres_Click(object sender, EventArgs e)
         {
             if (dgvLivresListeCommande.CurrentCell != null)
@@ -1492,18 +1600,20 @@ namespace Mediatek86.vue
             }
         }
 
+        /// <summary>
+        /// Remplit les champs de la GroupBox d'édition avec les valeurs du livre
+        /// </summary>
+        /// <param name="livre"></param>
         private void RemplirModifCommandeLivre(CommandeDocumentLivre livre)
         {
-            txtLivresIdCommandeModif.Text = livre.Id;
+            txtCommandeIdCommandeModif.Text = livre.Id;
             string etat = livre.Etat;
             cbxSuiviLivresCommande.SelectedIndex = cbxSuiviLivresCommande.FindStringExact(etat);
         }
-        private void ViderModifCommandeLivre()
-        {
-            txtLivresIdCommandeModif.Text = "";
-            cbxSuiviLivresCommande.SelectedIndex = 0;
-        }
 
+        /// <summary>
+        /// Vide les informations de la GroupBox d'ajout
+        /// </summary>
         private void ViderAjouterCommandeLivre()
         {
             txtLivresIdCommandeAjout.Text = "";
@@ -1512,9 +1622,19 @@ namespace Mediatek86.vue
             cbxLivresCommande.SelectedIndex = 0;
             nbExemplairesLivresCommande.Value = 0;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAjoutCompleteLivres_Click(object sender, EventArgs e)
+        {
+            
+        }
         #endregion
 
-        private void FrmMediatek_Load(object sender, EventArgs e)
+        private void btnAnnulerAjoutCommandLivre_Click(object sender, EventArgs e)
         {
 
         }
