@@ -25,7 +25,6 @@ namespace Mediatek86.vue
         private readonly BindingSource bdgExemplairesListe = new BindingSource();
         private readonly BindingSource bdgCommandesListeLivres = new BindingSource();
         private readonly BindingSource bdgSuivisListe = new BindingSource();
-        private List<Suivi> lesSuivis = new List<Suivi>();
         private List<Livre> lesLivres = new List<Livre>();
         private List<CommandeDocumentLivre> lesCommandesLivre = new List<CommandeDocumentLivre>();
         private List<Dvd> lesDvd = new List<Dvd>();
@@ -1300,6 +1299,7 @@ namespace Mediatek86.vue
         /// <param name="e"></param>
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
+            lesCommandesLivre = controle.GetCommandesLivres();
             InitDataGridViewLivreCommande();
             RemplirComboBoxLivresCommande();
             BloquerAjtModifCommandeLivres();
@@ -1328,6 +1328,28 @@ namespace Mediatek86.vue
             dgvLivresListeCommande.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
+        /// <summary>
+        /// Affiche les resultats d'une recherche par numero de document (Livre)
+        /// </summary>
+        /// <param name="livres"></param>
+        private void InitDataGridViewRechercheLivreCommande(List<CommandeDocumentLivre> livres)
+        {
+            bdgCommandesListeLivres.DataSource = livres;
+            dgvLivresListeCommande.DataSource = bdgCommandesListeLivres;
+            dgvLivresListeCommande.Columns["Id"].Visible = false;
+            dgvLivresListeCommande.Columns["IdLivDVD"].Visible = false;
+            dgvLivresListeCommande.Columns["idSuivi"].Visible = false;
+            dgvLivresListeCommande.Columns["ISBN"].Visible = false;
+            dgvLivresListeCommande.Columns["Titre"].Visible = false;
+            dgvLivresListeCommande.Columns["Auteur"].Visible = false;
+            dgvLivresListeCommande.Columns["Collection"].Visible = false;
+            dgvLivresListeCommande.Columns["Genre"].Visible = false;
+            dgvLivresListeCommande.Columns["Public"].Visible = false;
+            dgvLivresListeCommande.Columns["Rayon"].Visible = false;
+            dgvLivresListeCommande.Columns["image"].Visible = false;
+
+            dgvLivresListeCommande.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
         /// <summary>
         /// Quand la selection de ligne est changée (marche aussi quand on arrive sur la page)
         /// Les informations du livre sont remplies dans les champs correspondants
@@ -1410,25 +1432,21 @@ namespace Mediatek86.vue
         {
             if (!txbLivresNumeroRechercheCommande.Text.Equals(""))
             {
-                CommandeDocumentLivre livre = lesCommandesLivre.Find(x => x.IdLivDVD.Equals(txbLivresNumeroRechercheCommande.Text));
+                List<CommandeDocumentLivre> livres = lesCommandesLivre.FindAll(x => x.IdLivDVD.Equals(txbLivresNumeroRechercheCommande.Text));
                 txbLivresNumeroRechercheCommande.Text = "";
-                if (livre != null)
+                if (livres.Any())
                 {
-                    List<CommandeDocumentLivre> livres = new List<CommandeDocumentLivre>();
-                    livres.Add(livre);
                     lesCommandesLivre = livres;
-                    InitDataGridViewLivreCommande();
+                    InitDataGridViewRechercheLivreCommande(livres);
                 }
                 else
                 {
                     MessageBox.Show("Numéro introuvable");
-                    lesCommandesLivre = controle.GetCommandesLivres();
                     InitDataGridViewLivreCommande();
                 }
             }
             else
             {
-                lesCommandesLivre = controle.GetCommandesLivres();
                 InitDataGridViewLivreCommande();
             }
         }
