@@ -1436,7 +1436,6 @@ namespace Mediatek86.vue
                 txbLivresNumeroRechercheCommande.Text = "";
                 if (livres.Any())
                 {
-                    lesCommandesLivre = livres;
                     InitDataGridViewRechercheLivreCommande(livres);
                 }
                 else
