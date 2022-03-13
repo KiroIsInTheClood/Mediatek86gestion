@@ -261,10 +261,10 @@ namespace Mediatek86.modele
             }
         }
 
-        /*public static List<CommandeDocument> GetCommandesDVD() {
-            
-        }*/
-
+        /// <summary>
+        /// Permet d'obtenir toutes les infos liées a une commande (Livre)
+        /// </summary>
+        /// <returns>La List contenant toutes les infos de chaque commande (Livre)</returns>
         public static List<CommandeDocumentLivre> GetCommandesLivres() {
             List<CommandeDocumentLivre> lesCommandes = null;
             try
@@ -313,6 +313,10 @@ namespace Mediatek86.modele
             }
         }
 
+        /// <summary>
+        /// Permet d'obtenir tout les suivis
+        /// </summary>
+        /// <returns></returns>
         public static List<Suivi> GetAllSuivis()
         {
             List<Suivi> lesSuivis = null;
@@ -340,14 +344,82 @@ namespace Mediatek86.modele
             }
         }
 
+        /// <summary>
+        /// Permet de modifier l'étape de suivi d'une commande (Livre)
+        /// </summary>
+        /// <param name="idCommande"></param>
+        /// <param name="idSuivi"></param>
         public static void ModifierCommandeLivre(string idCommande, string idSuivi)
         {
-            string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE commandedocument.id = @idCommande";
+            string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE id = @idCommande";
             Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                     { "@idSuivi", idSuivi },
                     { "@idCommande", idCommande}
                 };
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
+
+        /// <summary>
+        /// Permet de creer une commande dans la table commande (Livre/Dvd)
+        /// </summary>
+        /// <param name="idCommande"></param>
+        /// <param name="montant"></param>
+        /// <param name="dateCommande"></param>
+        public static void CreerCommande(string idCommande, int montant, DateTime dateCommande)
+        {
+            string req = "INSERT INTO commande(id,dateCommande,montant) ";
+            req += "values (@id, @dateCommande, @montant);";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", idCommande);
+            parameters.Add("@dateCommande", dateCommande);
+            parameters.Add("@montant", montant);
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
+
+        /// <summary>
+        /// Permet de creer une commande dans la table commandedocument correspondant une commande de la table commande relié par un id (Livre)
+        /// </summary>
+        /// <param name="idCommande"></param>
+        /// <param name="livreId"></param>
+        /// <param name="nbExemplaire"></param>
+        public static void CreerCommandeDocumentLivre(string idCommande, string livreId, int nbExemplaire)
+        {
+            string req = "INSERT INTO commandedocument(id, nbExemplaire, idLivreDvd, idSuivi) ";
+            req += "values (@id, @nbExemplaire, @idLivreDvd, @idSuivi);";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", idCommande);
+            parameters.Add("@nbExemplaire", nbExemplaire);
+            parameters.Add("@idLivreDvd", livreId);
+            parameters.Add("@idSuivi", "00001");
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
+
+        /// <summary>
+        /// Permet de supprimer la ligne correspondante a l'id dans la table commandedocument (Livre)
+        /// </summary>
+        /// <param name="id"></param>
+        public static void SupprimerCommandeLivre(string id)
+        {
+            string req = "DELETE FROM commandedocument WHERE id = @id";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", id);
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
+
+        /// <summary>
+        /// Permet de supprimer la ligne correspondante a l'id dans la table commande (Livre/Dvd)
+        /// </summary>
+        /// <param name="id"></param>
+        public static void SupprimerCommande(string id)
+        {
+            string req = "DELETE FROM commande WHERE id = @id";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", id);
             BddMySql curs = BddMySql.GetInstance(connectionString);
             curs.ReqUpdate(req, parameters);
         }

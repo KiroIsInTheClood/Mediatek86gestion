@@ -1502,6 +1502,7 @@ namespace Mediatek86.vue
             if (dgvLivresListeCommande.CurrentCell != null)
             {
                 CommandeDocumentLivre laCommande = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+
                 if (laCommande.Etat == "Réglée.")
                 {
                     MessageBox.Show("Cette commande est déja réglée, impossible de retourner en arrière", "Erreur");
@@ -1518,7 +1519,7 @@ namespace Mediatek86.vue
                     ViderAjouterCommandeLivre();
                 }
 
-                RemplirModifCommandeLivre((CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position]);
+                RemplirModifCommandeLivre(laCommande);
             }
             else
             {
@@ -1592,7 +1593,14 @@ namespace Mediatek86.vue
         {
             if (dgvLivresListeCommande.CurrentCell != null)
             {
-                //TODO
+                CommandeDocumentLivre laCommande = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
+                if(laCommande.Etat == "Livrée." || laCommande.Etat == "Réglée.")
+                {
+                    MessageBox.Show("La commande est dans un stade trop avancé pour être supprimée");
+                    return;
+                }
+                controle.SupprimerCommandeLivre(laCommande.Id);
+                InitDataGridViewLivreCommande();
             }
             else
             {
@@ -1624,19 +1632,47 @@ namespace Mediatek86.vue
         }
 
         /// <summary>
-        /// 
+        /// Permet d'ajouter une commande si les champs sont saisis et que l'id de la commande n'existe pas déja
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btnAjoutCompleteLivres_Click(object sender, EventArgs e)
         {
-            
-        }
-        #endregion
+            if (txtLivresIdCommandeAjout.Text == "" || nbMontantLivresCommande.Value < 1 || nbExemplairesLivresCommande.Value < 1 || cbxLivresCommande.SelectedIndex == -1)
+            {
+                MessageBox.Show("Tout les champs doivent être remplis", "Erreur");
+                return;
+            }
+            string idCommande = txtLivresIdCommandeAjout.Text;
+            int exist = bdgCommandesListeLivres.IndexOf(bdgCommandesListeLivres.List.OfType<CommandeDocumentLivre>().ToList().Find(f => f.Id == idCommande));
+            if(exist != -1)
+            {
+                MessageBox.Show("L'Id correspondant a cette commande existe déja", "Erreur");
+                return;
+            }
+            int montant = (int)nbMontantLivresCommande.Value;
+            DateTime dateCommande = dateLivreCommande.Value;
+            string livreId = ((Livre)bdgLivresListe.List[bdgLivresListe.Position]).Id;
+            int nbExemplaires = (int)nbExemplairesLivresCommande.Value;
 
+            controle.CreerCommandeLivre(idCommande, montant, dateCommande, livreId, nbExemplaires);
+            InitDataGridViewLivreCommande();
+            ajoutCommandeLivre = false;
+            grpAjoutLivreCommande.Enabled = false;
+            ViderAjouterCommandeLivre();
+        }
+        /// <summary>
+        /// Disable la GroupBox d'ajout et met le boolean sur false
+        /// Reinitialise les champs de la GroupBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAnnulerAjoutCommandLivre_Click(object sender, EventArgs e)
         {
-
+            ajoutCommandeLivre = false;
+            grpAjoutLivreCommande.Enabled = false;
+            ViderAjouterCommandeLivre();
         }
+        #endregion
     }
 }
