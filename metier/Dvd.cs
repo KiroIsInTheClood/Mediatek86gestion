@@ -8,7 +8,6 @@ namespace Mediatek86.metier
 {
     public class Dvd : LivreDvd
     {
-
         private readonly int duree;
         private readonly string realisateur;
         private readonly string synopsis;
@@ -26,5 +25,9 @@ namespace Mediatek86.metier
         public string Realisateur { get => realisateur; }
         public string Synopsis { get => synopsis; }
 
+        public override string ToString()
+        {
+            return base.Titre.ToString();
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Mediatek86.controleur
         private readonly List<Categorie> lesPublics;
         private readonly List<Categorie> lesGenres;
         private List<CommandeDocumentLivre> lesCommandesLivres;
+        private List<CommandeDocumentDvd> lesCommandesDvd;
         private readonly List<Suivi> lesSuivis;
 
         /// <summary>
@@ -107,7 +108,7 @@ namespace Mediatek86.controleur
         }
 
         /// <summary>
-        /// Recupère toutes les commandes de la base de données
+        /// Recupère toutes les commandes de livres dans la base de données
         /// </summary>
         /// <returns>La liste contenant toutes les commandes</returns>
         public List<CommandeDocumentLivre> GetCommandesLivres()
@@ -130,33 +131,43 @@ namespace Mediatek86.controleur
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="idSuivi"></param>
-        public void ModifierCommandeLivre(string idCommande, string idSuivi)
+        public void ModifierCommandeLivreDVD(string idCommande, string idSuivi)
         {
-            Dao.ModifierCommandeLivre(idCommande, idSuivi);
+            Dao.ModifierCommandeLivreDVD(idCommande, idSuivi);
         }
 
         /// <summary>
-        /// /// Permet de créer une commande depuis l'onglet de Gestion des commandes (Livres)
+        /// Permet de créer une commande depuis l'onglet de Gestion des commandes (Livres)
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="montant"></param>
         /// <param name="dateCommande"></param>
         /// <param name="livreId"></param>
         /// <param name="nbExemplaire"></param>
-        public void CreerCommandeLivre(string idCommande, int montant, DateTime dateCommande, string livreId, int nbExemplaire)
+        public void CreerCommandeLivreDVD(string idCommande, int montant, DateTime dateCommande, string livreId, int nbExemplaire)
         {
             Dao.CreerCommande(idCommande, montant, dateCommande);
-            Dao.CreerCommandeDocumentLivre(idCommande, livreId, nbExemplaire);
+            Dao.CreerCommandeDocument2(idCommande, livreId, nbExemplaire);
         }
 
         /// <summary>
         /// Permet de supprimer une commande depuis l'onglet de Gestion des commandes (Livres)
         /// </summary>
         /// <param name="id"></param>
-        public void SupprimerCommandeLivre(string id)
+        public void SupprimerCommandeLivreDVD(string id)
         {
-            Dao.SupprimerCommandeLivre(id);
             Dao.SupprimerCommande(id);
+            Dao.SupprimerCommande2(id);
+        }
+
+        /// <summary>
+        /// Recupère toutes les commandes de DVD dans la base de données
+        /// </summary>
+        /// <returns>La liste contenant toutes les commandes</returns>
+        public List<CommandeDocumentDvd> GetCommandesDvd()
+        {
+            lesCommandesDvd = Dao.GetCommandesDvd();
+            return lesCommandesDvd;
         }
     }
 

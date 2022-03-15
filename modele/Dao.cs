@@ -279,6 +279,7 @@ namespace Mediatek86.modele
                 req += "LEFT JOIN `public` p ON d.idPublic = p.id ";
                 req += "LEFT JOIN `rayon` r ON d.idRayon = r.id ";
                 req += "LEFT JOIN `livre` ld ON ld.id = cd.idLivreDvd ";
+                req += "WHERE cd.idLivreDvd = ld.id ";
                 req += "ORDER BY c.dateCommande DESC";
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqSelect(req, null);
@@ -349,7 +350,7 @@ namespace Mediatek86.modele
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="idSuivi"></param>
-        public static void ModifierCommandeLivre(string idCommande, string idSuivi)
+        public static void ModifierCommandeLivreDVD(string idCommande, string idSuivi)
         {
             string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE id = @idCommande";
             Dictionary<string, object> parameters = new Dictionary<string, object>
@@ -380,12 +381,12 @@ namespace Mediatek86.modele
         }
 
         /// <summary>
-        /// Permet de creer une commande dans la table commandedocument correspondant une commande de la table commande relié par un id (Livre)
+        /// Permet de creer une commande dans la table commandedocument correspondant une commande de la table commande relié par un id (Livre/Dvd)
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="livreId"></param>
         /// <param name="nbExemplaire"></param>
-        public static void CreerCommandeDocumentLivre(string idCommande, string livreId, int nbExemplaire)
+        public static void CreerCommandeDocument2(string idCommande, string livreId, int nbExemplaire)
         {
             string req = "INSERT INTO commandedocument(id, nbExemplaire, idLivreDvd, idSuivi) ";
             req += "values (@id, @nbExemplaire, @idLivreDvd, @idSuivi);";
@@ -402,7 +403,7 @@ namespace Mediatek86.modele
         /// Permet de supprimer la ligne correspondante a l'id dans la table commandedocument (Livre)
         /// </summary>
         /// <param name="id"></param>
-        public static void SupprimerCommandeLivre(string id)
+        public static void SupprimerCommande(string id)
         {
             string req = "DELETE FROM commandedocument WHERE id = @id";
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -415,13 +416,67 @@ namespace Mediatek86.modele
         /// Permet de supprimer la ligne correspondante a l'id dans la table commande (Livre/Dvd)
         /// </summary>
         /// <param name="id"></param>
-        public static void SupprimerCommande(string id)
+        public static void SupprimerCommande2(string id)
         {
             string req = "DELETE FROM commande WHERE id = @id";
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
             BddMySql curs = BddMySql.GetInstance(connectionString);
             curs.ReqUpdate(req, parameters);
+        }
+
+        /// <summary>
+        /// Permet d'obtenir toutes les infos liées a une commande (Dvd)
+        /// </summary>
+        /// <returns>La List contenant toutes les infos de chaque commande (Dvd)</returns>
+        public static List<CommandeDocumentDvd> GetCommandesDvd()
+        {
+            List<CommandeDocumentDvd> lesCommandes = null;
+            try
+            {
+                lesCommandes = new List<CommandeDocumentDvd>();
+                string req = "SELECT c.id as id_commande, c.dateCommande, c.montant, cd.nbExemplaire, cd.idLivreDvd as idLivre, s.id as id_etat, s.libelle as etat, dd.duree, d.titre, dd.realisateur, dd.synopsis, g.libelle as genre, p.libelle as public, r.libelle as rayon, d.image ";
+                req += "FROM `commande` c ";
+                req += "LEFT JOIN `commandedocument` cd USING(id) ";
+                req += "LEFT JOIN `suivi` s ON s.id = cd.idSuivi ";
+                req += "LEFT JOIN `document` d ON d.id = cd.idLivreDvd ";
+                req += "LEFT JOIN `genre` g ON d.idGenre = g.id ";
+                req += "LEFT JOIN `public` p ON d.idPublic = p.id ";
+                req += "LEFT JOIN `rayon` r ON d.idRayon = r.id ";
+                req += "LEFT JOIN `dvd` dd ON dd.id = cd.idLivreDvd ";
+                req += "WHERE cd.idLivreDvd = dd.id ";
+                req += "ORDER BY c.dateCommande DESC";
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqSelect(req, null);
+
+                while (curs.Read())
+                {
+                    CommandeDocumentDvd commandeDocument = new CommandeDocumentDvd(
+                        (string)curs.Field("id_commande"),
+                        (DateTime)curs.Field("dateCommande"),
+                        (double)curs.Field("montant"),
+                        (int)curs.Field("nbExemplaire"),
+                        (string)curs.Field("idLivre"),
+                        (string)curs.Field("id_etat"),
+                        (string)curs.Field("etat"),
+                        (int)curs.Field("duree"),
+                        (string)curs.Field("titre"),
+                        (string)curs.Field("realisateur"),
+                        (string)curs.Field("synopsis"),
+                        (string)curs.Field("genre"),
+                        (string)curs.Field("public"),
+                        (string)curs.Field("rayon"),
+                        (string)curs.Field("image")
+                        );
+                    lesCommandes.Add(commandeDocument);
+                }
+                curs.Close();
+                return lesCommandes;
+            }
+            catch (Exception e)
+            {
+                return lesCommandes;
+            }
         }
     }
 }
