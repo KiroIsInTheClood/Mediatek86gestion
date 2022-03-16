@@ -49,8 +49,8 @@ namespace Mediatek86.metier
         }
 
         public string Id { get => id; }
-        public DateTime Date { get => date; }
-        public double Montant { get => montant; }
+        public DateTime DateDeCommande { get => date; }
+        public string Montant { get => montant + "€"; }
         public int NombreExemplaire { get => nombreExemplaire; }
         public string IdLivDVD { get => idLivDVD; }
         public string IdSuivi { get => idSuivi; }

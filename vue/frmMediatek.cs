@@ -26,9 +26,11 @@ namespace Mediatek86.vue
         private readonly BindingSource bdgCommandesListeLivres = new BindingSource();
         private readonly BindingSource bdgCommandesListeDvd = new BindingSource();
         private readonly BindingSource bdgSuivisListe = new BindingSource();
+        private readonly BindingSource bdgCommandesListeRevues = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
         private List<CommandeDocumentLivre> lesCommandesLivre = new List<CommandeDocumentLivre>();
         private List<CommandeDocumentDvd> lesCommandesDvd = new List<CommandeDocumentDvd>();
+        private List<CommandeRevue> lesCommandesRevues = new List<CommandeRevue>();
         private List<Dvd> lesDvd = new List<Dvd>();
         private List<Revue> lesRevues = new List<Revue>();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
@@ -72,6 +74,7 @@ namespace Mediatek86.vue
         {
             BloquerAjtModifCommandeDVD();
             BloquerAjtModifCommandeLivres();
+            grpAjtAbonnement.Enabled = false;
         }
 
         #endregion
@@ -1314,6 +1317,8 @@ namespace Mediatek86.vue
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
             lesCommandesLivre = controle.GetCommandesLivres();
+            lesCommandesRevues = controle.GetCommandesRevues();
+            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
             lesCommandesDvd = controle.GetCommandesDvd();
             bdgCommandesListeDvd.DataSource = lesCommandesDvd;
             InitDataGridViewLivreCommande();
@@ -1688,7 +1693,8 @@ namespace Mediatek86.vue
             string idCommande = txtLivresIdCommandeAjout.Text;
             int existLivre = bdgCommandesListeLivres.IndexOf(bdgCommandesListeLivres.List.OfType<CommandeDocumentLivre>().ToList().Find(f => f.Id == idCommande));
             int existDVD = bdgCommandesListeDvd.IndexOf(bdgCommandesListeDvd.List.OfType<CommandeDocumentDvd>().ToList().Find(f => f.Id == idCommande));
-            if (existDVD != -1 || existLivre != -1)
+            int existRevue = bdgCommandesListeRevues.IndexOf(bdgCommandesListeRevues.List.OfType<CommandeRevue>().ToList().Find(f => f.Id == idCommande));
+            if (existDVD != -1 || existLivre != -1 || existRevue != -1)
             {
                 MessageBox.Show("L'Id correspondant a cette commande existe déja", "Erreur");
                 return;
@@ -1735,6 +1741,8 @@ namespace Mediatek86.vue
         {
             lesCommandesLivre = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = lesCommandesLivre;
+            lesCommandesRevues = controle.GetCommandesRevues();
+            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
             lesCommandesDvd = controle.GetCommandesDvd();
             InitDataGridViewDVDCommande();
             RemplirComboBoxDVDCommande();
@@ -1819,7 +1827,6 @@ namespace Mediatek86.vue
             ajoutCommandeDVD = false;
             modifCommandeDVD = false;
         }
-        #endregion
 
         /// <summary>
         /// Permet de trouver toutes les commandes pour un id de DVD correspondant
@@ -2027,7 +2034,8 @@ namespace Mediatek86.vue
             string idCommande = txtDVDIdCommandeAjout.Text;
             int existLivre = bdgCommandesListeLivres.IndexOf(bdgCommandesListeLivres.List.OfType<CommandeDocumentLivre>().ToList().Find(f => f.Id == idCommande));
             int existDVD = bdgCommandesListeDvd.IndexOf(bdgCommandesListeDvd.List.OfType<CommandeDocumentDvd>().ToList().Find(f => f.Id == idCommande));
-            if (existDVD != -1 || existLivre != -1)
+            int existRevue = bdgCommandesListeRevues.IndexOf(bdgCommandesListeRevues.List.OfType<CommandeRevue>().ToList().Find(f => f.Id == idCommande));
+            if (existDVD != -1 || existLivre != -1 || existRevue != -1)
             {
                 MessageBox.Show("L'Id correspondant a cette commande existe déja", "Erreur");
                 return;
@@ -2136,6 +2144,222 @@ namespace Mediatek86.vue
             {
                 MessageBox.Show("Veuillez selectionner une commande", "Erreur");
             }
+        }
+        #endregion
+
+        #region Commande de Revues
+        private void tabGestionCmdRevues_Enter(object sender, EventArgs e)
+        {
+            lesCommandesRevues = controle.GetCommandesRevues();
+            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
+            lesCommandesLivre = controle.GetCommandesLivres();
+            bdgCommandesListeLivres.DataSource = lesCommandesLivre;
+            lesCommandesDvd = controle.GetCommandesDvd();
+            bdgCommandesListeDvd.DataSource = lesCommandesDvd;
+            RemplirComboBoxRevueAbonnement();
+            VideAjtAbonnementInfos();
+            BloquerAjoutModif();
+        }
+        #endregion
+
+        private void btnRechercheRevue_Click(object sender, EventArgs e)
+        {
+            if(txbNumRevue.Text != "")
+            {
+                List<CommandeRevue> revue = lesCommandesRevues.FindAll(x => x.IdRevue.Equals(txbNumRevue.Text));
+                txbNumRevue.Text = "";
+                if (revue.Any())
+                {
+                    InitDataGridViewRechercheRevueCommande(revue);
+                }
+                else
+                {
+                    MessageBox.Show("Numéro introuvable");
+                    dgvRevues.DataSource = null;
+                }
+            }
+            else
+            {
+                dgvRevues.DataSource = null;
+            }
+        }
+
+        private void InitDataGridViewRechercheRevueCommande(List<CommandeRevue> revues)
+        {
+            dgvRevues.DataSource = revues;
+            dgvRevues.Columns["Id"].Visible = false;
+            dgvRevues.Columns["IdRevue"].Visible = false;
+            dgvRevues.Columns["Empruntable"].Visible = false;
+            dgvRevues.Columns["Titre"].Visible = false;
+            dgvRevues.Columns["Periodicite"].Visible = false;
+            dgvRevues.Columns["DelaiMiseDispo"].Visible = false;
+            dgvRevues.Columns["Genre"].Visible = false;
+            dgvRevues.Columns["Public"].Visible = false;
+            dgvRevues.Columns["Rayon"].Visible = false;
+            dgvRevues.Columns["Image"].Visible = false;
+
+            dgvRevues.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        private void dgvRevues_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvRevues.CurrentCell != null)
+            {
+                try
+                {
+                    CommandeRevue commandeSelec = (CommandeRevue)bdgCommandesListeRevues.List[bdgCommandesListeRevues.Position];
+                    AfficheRevueCommandeInfos(commandeSelec);
+                }
+                catch
+                {
+                    txbNumRevue.Text = "";
+                }
+            }
+            else
+            {
+                VideRevueCommandeInfos();
+            }
+        }
+        private void AfficheRevueCommandeInfos(CommandeRevue revue)
+        {
+            txbNumeroRevue.Text = revue.IdRevue;
+            cbRevue.Checked = revue.Empruntable;
+            txbDelaiRevue.Text = revue.DelaiMiseDispo.ToString();
+            txbPeriodiciteRevue.Text = revue.Periodicite;
+            txbGenreRevue.Text = revue.Genre;
+            txbPublicRevue.Text = revue.Public;
+            txbRayonRevue.Text = revue.Rayon;
+            txbTitreRevue.Text = revue.Titre;
+            string image = revue.Image;
+            txbRevuesImage.Text = image;
+            try
+            {
+                picRevue.Image = Image.FromFile(image);
+            }
+            catch
+            {
+                picRevue.Image = null;
+            }
+        }
+
+        private void VideRevueCommandeInfos()
+        {
+            txbNumeroRevue.Text = "";
+            cbRevue.Checked = false;
+            txbTitreRevue.Text = "";
+            txbPeriodiciteRevue.Text = "";
+            txbDelaiRevue.Text = "";
+            txbGenreRevue.Text = "";
+            txbPublicRevue.Text = "";
+            txbRayonRevue.Text = "";
+            txbImgRevue.Text = "";
+            picRevue.Image = null;
+        }
+
+        private void VideAjtAbonnementInfos()
+        {
+            txbIdCommande.Text = "";
+            cbxRevue.SelectedIndex = 0;
+            montantRevue.Value = 0;
+            dtpDebutRevue.Value = DateTime.Now;
+            dptFinRevue.Value = DateTime.Now;
+        }
+
+        private void RemplirComboBoxRevueAbonnement()
+        {
+            List<Revue> revues = controle.GetAllRevues();
+            bdgRevuesListe.DataSource = revues;
+            cbxRevue.DataSource = bdgRevuesListe;
+            if (cbxRevue.Items.Count > 0)
+            {
+                cbxRevue.SelectedIndex = 0;
+            }
+        }
+
+        private void btnAjtRevue_Click(object sender, EventArgs e)
+        {
+            grpAjtAbonnement.Enabled = true;
+        }
+
+        private void btnAnulAjtRevue_Click(object sender, EventArgs e)
+        {
+            grpAjtAbonnement.Enabled = false;
+            VideAjtAbonnementInfos();
+        }
+
+        private void btnAjtFiniRevue_Click(object sender, EventArgs e)
+        {
+            if(txbIdCommande.Text == "" || cbxRevue.SelectedIndex == -1 || montantRevue.Value < 1)
+            {
+                MessageBox.Show("Tout les champs doivent etre remplis", "Erreur");
+                return;
+            }
+            if(dtpDebutRevue.Value < DateTime.Today || dptFinRevue.Value < DateTime.Today)
+            {
+                MessageBox.Show("L'une des deux dates est inferieur a la date du jour", "Erreur");
+                return;
+            }
+            if(dtpDebutRevue.Value >= dptFinRevue.Value)
+            {
+                MessageBox.Show("La date de debut d'abonnement est supérieure ou égale a la date de fin", "Erreur");
+                return;
+            }
+            string idCommande = txbIdCommande.Text;
+            int existLivre = bdgCommandesListeLivres.IndexOf(bdgCommandesListeLivres.List.OfType<CommandeDocumentLivre>().ToList().Find(f => f.Id == idCommande));
+            int existDVD = bdgCommandesListeDvd.IndexOf(bdgCommandesListeDvd.List.OfType<CommandeDocumentDvd>().ToList().Find(f => f.Id == idCommande));
+            int existRevue = bdgCommandesListeRevues.IndexOf(bdgCommandesListeRevues.List.OfType<CommandeRevue>().ToList().Find(f => f.Id == idCommande));
+            if (existDVD != -1 || existLivre != -1 || existRevue != -1)
+            {
+                MessageBox.Show("L'Id correspondant a cette commande existe déja", "Erreur");
+                return;
+            }
+            int montant = (int)montantRevue.Value;
+            DateTime dateDebutAbonnement = dtpDebutRevue.Value;
+            DateTime dateFinAbonnement = dptFinRevue.Value;
+            string revueId = ((Revue)bdgRevuesListe.List[bdgRevuesListe.Position]).Id;
+            controle.CreerAbonnement(idCommande, montant, dateDebutAbonnement, dateFinAbonnement, revueId);
+            lesCommandesRevues = controle.GetCommandesRevues();
+            InitDataGridViewRechercheRevueCommande(lesCommandesRevues.FindAll(x => x.IdRevue.Equals(revueId)));
+            grpAjtAbonnement.Enabled = false;
+            VideAjtAbonnementInfos();
+        }
+
+        private void btnSupprRevue_Click(object sender, EventArgs e)
+        {
+            bool exist = false;
+            CommandeRevue abonnement = (CommandeRevue)bdgCommandesListeRevues.List[bdgCommandesListeRevues.Position];
+            List<Exemplaire> exemplaires = controle.GetExemplairesRevue(abonnement.IdRevue);
+
+            foreach (Exemplaire exemplaire in exemplaires)
+            {
+                if (ParutionDansAbonnement(abonnement.DateDeCommande, abonnement.DateDeFinAbonnement, exemplaire.DateAchat))
+                {
+                    exist = true;
+                    break;
+                }
+            }
+
+            if (exist)
+            {
+                MessageBox.Show("Au moins un exemplaire existe pendant la durée de l'abonnement", "Erreur");
+                return;
+            }
+
+            DialogResult dialogResult = MessageBox.Show($"Êtes vous sur(e) de vouloir supprimer l'abonnement ayant pour id : {abonnement.Id}", "Confirmer", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                controle.SupprimerAbonnnement(abonnement.Id);
+                dgvRevues.DataSource = null;
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
+        }
+
+        private bool ParutionDansAbonnement(DateTime dateCommande, DateTime dateFinAbonnement, DateTime dateParution)
+        {
+            return (dateParution > dateCommande && dateParution < dateFinAbonnement);
         }
     }
 }

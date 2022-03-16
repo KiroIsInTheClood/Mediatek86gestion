@@ -478,5 +478,81 @@ namespace Mediatek86.modele
                 return lesCommandes;
             }
         }
+
+        public static List<CommandeRevue> GetCommandesRevues()
+        {
+            List<CommandeRevue> lesCommandes = null;
+            try
+            {
+                lesCommandes = new List<CommandeRevue>();
+                string req = "SELECT c.id, c.dateCommande, a.dateFinAbonnement, a.idRevue, r.empruntable, d.titre, r.periodicite, r.delaiMiseADispo as delai, g.libelle as genre, p.libelle as public, ra.libelle as rayon, d.image, c.montant ";
+                req += "FROM commande c ";
+                req += "LEFT JOIN abonnement a USING(id) ";
+                req += "LEFT JOIN revue r ON a.idRevue = r.id ";
+                req += "LEFT JOIN document d ON a.idRevue = d.id ";
+                req += "LEFT JOIN genre g ON d.idGenre = g.id ";
+                req += "LEFT JOIN public p ON d.idPublic = p.id ";
+                req += "LEFT JOIN rayon ra ON d.idRayon = ra.id ";
+                req += "WHERE a.idRevue = r.id ";
+                req += "ORDER BY c.dateCommande DESC";
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqSelect(req, null);
+
+                while (curs.Read())
+                {
+                    CommandeRevue commandeDocument = new CommandeRevue(
+                        (string)curs.Field("id"),
+                        (DateTime)curs.Field("dateCommande"),
+                        (DateTime)curs.Field("dateFinAbonnement"),
+                        (string)curs.Field("idRevue"),
+                        (bool)curs.Field("empruntable"),
+                        (string)curs.Field("titre"),
+                        (string)curs.Field("periodicite"),
+                        (int)curs.Field("delai"),
+                        (string)curs.Field("genre"),
+                        (string)curs.Field("public"),
+                        (string)curs.Field("rayon"),
+                        (string)curs.Field("image"),
+                        (double)curs.Field("montant")
+                        );
+                    lesCommandes.Add(commandeDocument);
+                }
+                curs.Close();
+                return lesCommandes;
+            }
+            catch (Exception e)
+            {
+                return lesCommandes;
+            }
+        }
+
+        public static void CreerAbonnement(string idCommande, DateTime dateFinAbonnement, string revueId)
+        {
+            try
+            {
+                string req = "insert into abonnement values (@idCommande,@dateFinAbonnement,@revueId)";
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    { "@idCommande", idCommande},
+                    { "@dateFinAbonnement", dateFinAbonnement},
+                    { "@revueId", revueId},
+                };
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                curs.Close();
+            }
+            catch(Exception)
+            {
+            }
+        }
+
+        public static void SupprimerAbonnement(string idCommande)
+        {
+            string req = "DELETE FROM abonnement WHERE id = @id";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", idCommande);
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqUpdate(req, parameters);
+        }
     }
 }
