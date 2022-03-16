@@ -2,12 +2,14 @@
 using Mediatek86.metier;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Windows.Forms;
 
 namespace Mediatek86.modele
 {
     public static class Dao
     {
-
+        private static int nb = 0;
         private static readonly string server = "localhost";
         private static readonly string userid = "root";
         private static readonly string password = "";
@@ -350,79 +352,116 @@ namespace Mediatek86.modele
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="idSuivi"></param>
-        public static void ModifierCommandeLivreDVD(string idCommande, string idSuivi)
+        public static bool ModifierCommandeLivreDVD(string idCommande, string idSuivi)
         {
-            string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE id = @idCommande";
-            Dictionary<string, object> parameters = new Dictionary<string, object>
+            try
+            {
+                string req = "UPDATE commandedocument SET idSuivi = @idSuivi WHERE id = @idCommande";
+                Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                     { "@idSuivi", idSuivi },
                     { "@idCommande", idCommande}
                 };
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            } catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
-        /// Permet de creer une commande dans la table commande (Livre/Dvd)
+        /// Permet de creer une commande dans la table commande (Universel)
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="montant"></param>
         /// <param name="dateCommande"></param>
-        public static void CreerCommande(string idCommande, int montant, DateTime dateCommande)
+        public static bool CreerCommande(string idCommande, int montant, DateTime dateCommande)
         {
-            string req = "INSERT INTO commande(id,dateCommande,montant) ";
-            req += "values (@id, @dateCommande, @montant);";
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", idCommande);
-            parameters.Add("@dateCommande", dateCommande);
-            parameters.Add("@montant", montant);
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+            try
+            {
+                string req = "INSERT INTO commande(id,dateCommande,montant) ";
+                req += "values (@id, @dateCommande, @montant);";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("@id", idCommande);
+                parameters.Add("@dateCommande", dateCommande);
+                parameters.Add("@montant", montant);
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            } catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
-        /// Permet de creer une commande dans la table commandedocument correspondant une commande de la table commande relié par un id (Livre/Dvd)
+        /// Permet de creer une commande dans la table commandedocument correspondant une commande de la table commande relié par un id (Universel)
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="livreId"></param>
         /// <param name="nbExemplaire"></param>
-        public static void CreerCommandeDocument2(string idCommande, string livreId, int nbExemplaire)
+        public static bool CreerCommandeDocument2(string idCommande, string livreId, int nbExemplaire)
         {
-            string req = "INSERT INTO commandedocument(id, nbExemplaire, idLivreDvd, idSuivi) ";
-            req += "values (@id, @nbExemplaire, @idLivreDvd, @idSuivi);";
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", idCommande);
-            parameters.Add("@nbExemplaire", nbExemplaire);
-            parameters.Add("@idLivreDvd", livreId);
-            parameters.Add("@idSuivi", "00001");
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+            try
+            {
+                string req = "INSERT INTO commandedocument(id, nbExemplaire, idLivreDvd, idSuivi) ";
+                req += "values (@id, @nbExemplaire, @idLivreDvd, @idSuivi);";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("@id", idCommande);
+                parameters.Add("@nbExemplaire", nbExemplaire);
+                parameters.Add("@idLivreDvd", livreId);
+                parameters.Add("@idSuivi", "00001");
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            } catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Permet de supprimer la ligne correspondante a l'id dans la table commandedocument (Livre)
         /// </summary>
         /// <param name="id"></param>
-        public static void SupprimerCommande(string id)
+        public static bool SupprimerCommande(string id)
         {
-            string req = "DELETE FROM commandedocument WHERE id = @id";
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", id);
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+            try
+            {
+                string req = "DELETE FROM commandedocument WHERE id = @id";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("@id", id);
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
-        /// Permet de supprimer la ligne correspondante a l'id dans la table commande (Livre/Dvd)
+        /// Permet de supprimer la ligne correspondante a l'id dans la table commande (Universel)
         /// </summary>
         /// <param name="id"></param>
-        public static void SupprimerCommande2(string id)
+        public static bool SupprimerCommande2(string id)
         {
-            string req = "DELETE FROM commande WHERE id = @id";
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", id);
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+            try
+            {
+                string req = "DELETE FROM commande WHERE id = @id";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("@id", id);
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -479,7 +518,11 @@ namespace Mediatek86.modele
             }
         }
 
-        public static List<CommandeRevue> GetCommandesRevues()
+        /// <summary>
+        /// Permet d'obtenir toutes les revues afin de les afficher dans une ComboBox
+        /// </summary>
+        /// <returns>Une liste comportant toutes les revues</returns>
+        public static List<CommandeRevue> GetAbonnementsRevues()
         {
             List<CommandeRevue> lesCommandes = null;
             try
@@ -526,7 +569,13 @@ namespace Mediatek86.modele
             }
         }
 
-        public static void CreerAbonnement(string idCommande, DateTime dateFinAbonnement, string revueId)
+        /// <summary>
+        /// Creer un abonnement
+        /// </summary>
+        /// <param name="idCommande"></param>
+        /// <param name="dateFinAbonnement"></param>
+        /// <param name="revueId"></param>
+        public static bool CreerAbonnement(string idCommande, DateTime dateFinAbonnement, string revueId)
         {
             try
             {
@@ -540,19 +589,68 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 curs.Close();
+                return true;
             }
             catch(Exception)
             {
+                return false;
             }
         }
 
-        public static void SupprimerAbonnement(string idCommande)
+        /// <summary>
+        /// Supprime un abonnement
+        /// </summary>
+        /// <param name="idCommande"></param>
+        public static bool SupprimerAbonnement(string idCommande)
         {
-            string req = "DELETE FROM abonnement WHERE id = @id";
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", idCommande);
-            BddMySql curs = BddMySql.GetInstance(connectionString);
-            curs.ReqUpdate(req, parameters);
+            try
+            {
+                string req = "DELETE FROM abonnement WHERE id = @id";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("@id", idCommande);
+                BddMySql curs = BddMySql.GetInstance(connectionString);
+                curs.ReqUpdate(req, parameters);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Permet d'afficher tout les abonnements dont la date de fin est en dessous de 30 jours au login
+        /// 
+        /// Ne s'execute qu'une fois au démarrage
+        /// </summary>
+        /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
+        public static string GetAbonnementsSub30Days()
+        {
+            //Fonctionne sans cette partie
+            if (nb == 0)
+            {
+                try
+                {
+                    string req = "CALL abonnementsEnDessousTrentreJours;";
+                    BddMySql curs = BddMySql.GetInstance(connectionString);
+                    curs.ReqSelect(req, null);
+                    StringBuilder procedure = new StringBuilder("");
+                    while (curs.Read())
+                    {
+                        string titre = (string)curs.Field("titre");
+                        string date = curs.Field("dateFinAbonnement").ToString().Substring(0, 10);
+                        procedure.Append($"{titre} - {date}\n");
+                    }
+                    nb++;
+                    return procedure.ToString();
+                }
+                catch
+                {
+                    nb++;
+                    return "";
+                }
+            }
+            else { return ""; }
         }
     }
 }

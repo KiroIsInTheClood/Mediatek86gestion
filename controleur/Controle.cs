@@ -14,9 +14,6 @@ namespace Mediatek86.controleur
         private readonly List<Categorie> lesRayons;
         private readonly List<Categorie> lesPublics;
         private readonly List<Categorie> lesGenres;
-        private List<CommandeDocumentLivre> lesCommandesLivres;
-        private List<CommandeDocumentDvd> lesCommandesDvd;
-        private List<CommandeRevue> lesCommandesRevues;
         private readonly List<Suivi> lesSuivis;
 
         /// <summary>
@@ -114,6 +111,7 @@ namespace Mediatek86.controleur
         /// <returns>La liste contenant toutes les commandes</returns>
         public List<CommandeDocumentLivre> GetCommandesLivres()
         {
+            List<CommandeDocumentLivre> lesCommandesLivres;
             lesCommandesLivres = Dao.GetCommandesLivres();
             return lesCommandesLivres;
         }
@@ -132,9 +130,10 @@ namespace Mediatek86.controleur
         /// </summary>
         /// <param name="idCommande"></param>
         /// <param name="idSuivi"></param>
-        public void ModifierCommandeLivreDVD(string idCommande, string idSuivi)
+        public bool ModifierCommandeLivreDVD(string idCommande, string idSuivi)
         {
-            Dao.ModifierCommandeLivreDVD(idCommande, idSuivi);
+            bool resultat = Dao.ModifierCommandeLivreDVD(idCommande, idSuivi);
+            return resultat;
         }
 
         /// <summary>
@@ -145,20 +144,28 @@ namespace Mediatek86.controleur
         /// <param name="dateCommande"></param>
         /// <param name="livreId"></param>
         /// <param name="nbExemplaire"></param>
-        public void CreerCommandeLivreDVD(string idCommande, int montant, DateTime dateCommande, string livreId, int nbExemplaire)
+        public bool CreerCommandeLivreDVD(string idCommande, int montant, DateTime dateCommande, string livreId, int nbExemplaire)
         {
-            Dao.CreerCommande(idCommande, montant, dateCommande);
-            Dao.CreerCommandeDocument2(idCommande, livreId, nbExemplaire);
+            bool resultat1 = Dao.CreerCommande(idCommande, montant, dateCommande);
+            if (!resultat1) return false;
+            bool resultat2 = Dao.CreerCommandeDocument2(idCommande, livreId, nbExemplaire);
+            if (!resultat2) return false;
+
+            return true;
         }
 
         /// <summary>
         /// Permet de supprimer une commande depuis l'onglet de Gestion des commandes (Livres)
         /// </summary>
         /// <param name="id"></param>
-        public void SupprimerCommandeLivreDVD(string id)
+        public bool SupprimerCommandeLivreDVD(string id)
         {
-            Dao.SupprimerCommande(id);
-            Dao.SupprimerCommande2(id);
+            bool resultat1 = Dao.SupprimerCommande(id);
+            if (!resultat1) return false;
+            bool resultat2 = Dao.SupprimerCommande2(id);
+            if (!resultat2) return false;
+
+            return true;
         }
 
         /// <summary>
@@ -167,27 +174,65 @@ namespace Mediatek86.controleur
         /// <returns>La liste contenant toutes les commandes</returns>
         public List<CommandeDocumentDvd> GetCommandesDvd()
         {
+            List<CommandeDocumentDvd> lesCommandesDvd;
             lesCommandesDvd = Dao.GetCommandesDvd();
             return lesCommandesDvd;
         }
 
-        public List<CommandeRevue> GetCommandesRevues()
+        /// <summary>
+        /// Recupère tout les abonnements aux revues dans la base de données
+        /// </summary>
+        /// <returns>La liste contenant toutes les abonnements</returns>
+        public List<CommandeRevue> GetAbonnementsRevues()
         {
-            lesCommandesRevues = Dao.GetCommandesRevues();
-            return lesCommandesRevues;
+            List<CommandeRevue> lesAbonnementsRevues;
+            lesAbonnementsRevues = Dao.GetAbonnementsRevues();
+            return lesAbonnementsRevues;
         }
 
-        public void CreerAbonnement(string idCommande, int montant, DateTime dateDebutAbonnement,
+        /// <summary>
+        /// Permet de creer un abonnement
+        /// </summary>
+        /// <param name="idCommande"></param>
+        /// <param name="montant"></param>
+        /// <param name="dateDebutAbonnement"></param>
+        /// <param name="dateFinAbonnement"></param>
+        /// <param name="revueId"></param>
+        public bool CreerAbonnement(string idCommande, int montant, DateTime dateDebutAbonnement,
             DateTime dateFinAbonnement, string revueId)
         {
-            Dao.CreerCommande(idCommande, montant, dateDebutAbonnement);
-            Dao.CreerAbonnement(idCommande, dateFinAbonnement, revueId);
+            bool resultat1 = Dao.CreerCommande(idCommande, montant, dateDebutAbonnement);
+            if (!resultat1) return false;
+            bool resultat2 = Dao.CreerAbonnement(idCommande, dateFinAbonnement, revueId);
+            if (!resultat2) return false;
+
+            return true;
         }
 
-        public void SupprimerAbonnnement(string idCommande)
+        /// <summary>
+        /// Permet de supprimer un abonnement
+        /// </summary>
+        /// <param name="idCommande"></param>
+        public bool SupprimerAbonnnement(string idCommande)
         {
-            Dao.SupprimerAbonnement(idCommande);
-            Dao.SupprimerCommande2(idCommande);
+            bool resultat1 = Dao.SupprimerAbonnement(idCommande);
+            if (!resultat1) return false;
+            bool resultat2 = Dao.SupprimerCommande2(idCommande);
+            if (!resultat2) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Permet d'afficher tout les abonnements dont la date de fin est en dessous de 30 jours au login
+        /// 
+        /// Ne s'execute qu'une fois au démarrage
+        /// </summary>
+        /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
+        public string GetAbonnementsSub30Days()
+        {
+            string procedure = Dao.GetAbonnementsSub30Days();
+            return procedure;
         }
     }
 }

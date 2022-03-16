@@ -5,6 +5,8 @@ using Mediatek86.metier;
 using Mediatek86.controleur;
 using System.Drawing;
 using System.Linq;
+using Mediatek86.modele;
+using System.Text;
 
 namespace Mediatek86.vue
 {
@@ -30,7 +32,7 @@ namespace Mediatek86.vue
         private List<Livre> lesLivres = new List<Livre>();
         private List<CommandeDocumentLivre> lesCommandesLivre = new List<CommandeDocumentLivre>();
         private List<CommandeDocumentDvd> lesCommandesDvd = new List<CommandeDocumentDvd>();
-        private List<CommandeRevue> lesCommandesRevues = new List<CommandeRevue>();
+        private List<CommandeRevue> lesAbonnementsRevues = new List<CommandeRevue>();
         private List<Dvd> lesDvd = new List<Dvd>();
         private List<Revue> lesRevues = new List<Revue>();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
@@ -419,6 +421,11 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
             BloquerAjoutModif();
+            string procedure = controle.GetAbonnementsSub30Days();
+            if (procedure != "")
+            {
+                MessageBox.Show(procedure, "Abonnements finissants dans moins de 30 jours");
+            }
             //dgvLivresListeGestion.TabPages.RemoveByKey("nomdutab");
         }
 
@@ -1317,8 +1324,8 @@ namespace Mediatek86.vue
         private void tabGestionLivres_Enter(object sender, EventArgs e)
         {
             lesCommandesLivre = controle.GetCommandesLivres();
-            lesCommandesRevues = controle.GetCommandesRevues();
-            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
+            lesAbonnementsRevues = controle.GetAbonnementsRevues();
+            bdgCommandesListeRevues.DataSource = lesAbonnementsRevues;
             lesCommandesDvd = controle.GetCommandesDvd();
             bdgCommandesListeDvd.DataSource = lesCommandesDvd;
             InitDataGridViewLivreCommande();
@@ -1595,11 +1602,16 @@ namespace Mediatek86.vue
                 return;
             }
 
-            controle.ModifierCommandeLivreDVD(laCommande.Id, suiviId);
+            bool resultat = controle.ModifierCommandeLivreDVD(laCommande.Id, suiviId);
             InitDataGridViewLivreCommande();
             ViderEditCommandeLivre();
             modifCommandeLivre = false;
             grpModifLivreCommande.Enabled = false;
+
+            if (!resultat)
+            {
+                MessageBox.Show("Une erreur est survenue", "Erreur");
+            }
         }
 
         /// <summary>
@@ -1641,8 +1653,12 @@ namespace Mediatek86.vue
                 DialogResult dialogResult = MessageBox.Show($"Êtes vous sur(e) de vouloir supprimer la commande ayant pour id : {laCommande.Id}", "Confirmer", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    controle.SupprimerCommandeLivreDVD(laCommande.Id);
+                    bool resultat = controle.SupprimerCommandeLivreDVD(laCommande.Id);
                     InitDataGridViewLivreCommande();
+                    if (!resultat)
+                    {
+                        MessageBox.Show("Une erreur est survenue", "Erreur");
+                    }
                 }
                 else if (dialogResult == DialogResult.No)
                 {
@@ -1704,13 +1720,18 @@ namespace Mediatek86.vue
             string livreId = ((Livre)bdgLivresListe.List[bdgLivresListe.Position]).Id;
             int nbExemplaires = (int)nbExemplairesLivresCommande.Value;
 
-            controle.CreerCommandeLivreDVD(idCommande, montant, dateCommande, livreId, nbExemplaires);
+            bool resultat = controle.CreerCommandeLivreDVD(idCommande, montant, dateCommande, livreId, nbExemplaires);
             lesCommandesLivre = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = controle.GetCommandesLivres();
             InitDataGridViewLivreCommande();
             ajoutCommandeLivre = false;
             grpAjoutLivreCommande.Enabled = false;
             ViderAjouterCommandeLivre();
+
+            if (!resultat)
+            {
+                MessageBox.Show("Une erreur est survenue", "Erreur");
+            }
         }
         /// <summary>
         /// Disable la GroupBox d'ajout et met le boolean sur false
@@ -1741,8 +1762,8 @@ namespace Mediatek86.vue
         {
             lesCommandesLivre = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = lesCommandesLivre;
-            lesCommandesRevues = controle.GetCommandesRevues();
-            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
+            lesAbonnementsRevues = controle.GetAbonnementsRevues();
+            bdgCommandesListeRevues.DataSource = lesAbonnementsRevues;
             lesCommandesDvd = controle.GetCommandesDvd();
             InitDataGridViewDVDCommande();
             RemplirComboBoxDVDCommande();
@@ -2045,12 +2066,17 @@ namespace Mediatek86.vue
             string livreId = ((Dvd)bdgDvdListe.List[bdgDvdListe.Position]).Id;
             int nbExemplaires = (int)nbExemplairesDVDCommande.Value;
 
-            controle.CreerCommandeLivreDVD(idCommande, montant, dateCommande, livreId, nbExemplaires);
+            bool resultat = controle.CreerCommandeLivreDVD(idCommande, montant, dateCommande, livreId, nbExemplaires);
             lesCommandesDvd = controle.GetCommandesDvd();
             InitDataGridViewDVDCommande();
             ajoutCommandeDVD = false;
             grpAjoutCommandeDVD.Enabled = false;
             ViderAjouterCommandeDVD();
+
+            if (!resultat)
+            {
+                MessageBox.Show("Une erreur est survenue", "Erreur");
+            }
         }
 
         /// <summary>
@@ -2132,8 +2158,12 @@ namespace Mediatek86.vue
                 DialogResult dialogResult = MessageBox.Show($"Êtes vous sur(e) de vouloir supprimer la commande ayant pour id : {laCommande.Id}", "Confirmer", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    controle.SupprimerCommandeLivreDVD(laCommande.Id);
+                    bool resultat = controle.SupprimerCommandeLivreDVD(laCommande.Id);
                     InitDataGridViewDVDCommande();
+                    if (!resultat)
+                    {
+                        MessageBox.Show("Une erreur est survenue", "Erreur");
+                    }
                 }
                 else if (dialogResult == DialogResult.No)
                 {
@@ -2150,8 +2180,8 @@ namespace Mediatek86.vue
         #region Commande de Revues
         private void tabGestionCmdRevues_Enter(object sender, EventArgs e)
         {
-            lesCommandesRevues = controle.GetCommandesRevues();
-            bdgCommandesListeRevues.DataSource = lesCommandesRevues;
+            lesAbonnementsRevues = controle.GetAbonnementsRevues();
+            bdgCommandesListeRevues.DataSource = lesAbonnementsRevues;
             lesCommandesLivre = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = lesCommandesLivre;
             lesCommandesDvd = controle.GetCommandesDvd();
@@ -2166,7 +2196,7 @@ namespace Mediatek86.vue
         {
             if(txbNumRevue.Text != "")
             {
-                List<CommandeRevue> revue = lesCommandesRevues.FindAll(x => x.IdRevue.Equals(txbNumRevue.Text));
+                List<CommandeRevue> revue = lesAbonnementsRevues.FindAll(x => x.IdRevue.Equals(txbNumRevue.Text));
                 txbNumRevue.Text = "";
                 if (revue.Any())
                 {
@@ -2317,11 +2347,16 @@ namespace Mediatek86.vue
             DateTime dateDebutAbonnement = dtpDebutRevue.Value;
             DateTime dateFinAbonnement = dptFinRevue.Value;
             string revueId = ((Revue)bdgRevuesListe.List[bdgRevuesListe.Position]).Id;
-            controle.CreerAbonnement(idCommande, montant, dateDebutAbonnement, dateFinAbonnement, revueId);
-            lesCommandesRevues = controle.GetCommandesRevues();
-            InitDataGridViewRechercheRevueCommande(lesCommandesRevues.FindAll(x => x.IdRevue.Equals(revueId)));
+            bool resultat = controle.CreerAbonnement(idCommande, montant, dateDebutAbonnement, dateFinAbonnement, revueId);
+            lesAbonnementsRevues = controle.GetAbonnementsRevues();
+            InitDataGridViewRechercheRevueCommande(lesAbonnementsRevues.FindAll(x => x.IdRevue.Equals(revueId)));
             grpAjtAbonnement.Enabled = false;
             VideAjtAbonnementInfos();
+
+            if (!resultat)
+            {
+                MessageBox.Show("Une erreur est survenue", "Erreur");
+            }
         }
 
         private void btnSupprRevue_Click(object sender, EventArgs e)
@@ -2348,8 +2383,13 @@ namespace Mediatek86.vue
             DialogResult dialogResult = MessageBox.Show($"Êtes vous sur(e) de vouloir supprimer l'abonnement ayant pour id : {abonnement.Id}", "Confirmer", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                controle.SupprimerAbonnnement(abonnement.Id);
+                bool resultat = controle.SupprimerAbonnnement(abonnement.Id);
                 dgvRevues.DataSource = null;
+
+                if (!resultat)
+                {
+                    MessageBox.Show("Une erreur est survenue", "Erreur");
+                }
             }
             else if (dialogResult == DialogResult.No)
             {
