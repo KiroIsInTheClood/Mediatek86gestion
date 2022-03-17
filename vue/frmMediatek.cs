@@ -1455,7 +1455,7 @@ namespace Mediatek86.vue
             txbLivresPublicCommande.Text = "";
             txbLivresRayonCommande.Text = "";
             txbLivresImageCommande.Text = "";
-            picLivresCommande = null;
+            picLivresCommande.Image = null;
         }
 
         /// <summary>
