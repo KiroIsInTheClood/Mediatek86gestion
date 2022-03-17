@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 11 mars 2022 à 18:25
+-- Généré le : mer. 16 mars 2022 à 21:06
 -- Version du serveur : 8.0.27
 -- Version de PHP : 7.4.26
 
@@ -21,18 +21,41 @@ SET time_zone = "+00:00";
 -- Base de données : mediatek86
 --
 
+DELIMITER $$
+--
+-- Procédures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `abonnementsEnDessousTrentreJours` ()  BEGIN  
+    DECLARE aujourdhui DATE;
+    DECLARE dateDans30Jours DATE;
+    SET aujourdhui = CURDATE();
+    SET dateDans30Jours = DATE_ADD(aujourdhui, interval 30 DAY);
+    SELECT d.titre, a.dateFinAbonnement FROM abonnement a
+    LEFT JOIN document d ON d.id = a.idRevue
+    WHERE a.dateFinAbonnement BETWEEN aujourdhui AND dateDans30Jours
+    ORDER BY a.dateFinAbonnement ASC;
+END$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
 -- Structure de la table abonnement
 --
 
-DROP TABLE IF EXISTS abonnement;
 CREATE TABLE abonnement (
   id varchar(5) NOT NULL,
   dateFinAbonnement date DEFAULT NULL,
   idRevue varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table abonnement
+--
+
+INSERT INTO abonnement (id, dateFinAbonnement, idRevue) VALUES
+('18', '2022-03-17', '10011');
 
 -- --------------------------------------------------------
 
@@ -40,7 +63,6 @@ CREATE TABLE abonnement (
 -- Structure de la table commande
 --
 
-DROP TABLE IF EXISTS commande;
 CREATE TABLE commande (
   id varchar(5) NOT NULL,
   dateCommande date DEFAULT NULL,
@@ -53,7 +75,14 @@ CREATE TABLE commande (
 
 INSERT INTO commande (id, dateCommande, montant) VALUES
 ('1', '2022-03-09', 1),
-('2', '2022-03-11', 3);
+('10', '2022-03-15', 1),
+('14', '2022-03-15', 1),
+('15', '2022-03-15', 1),
+('18', '2017-03-01', 1),
+('2', '2022-03-11', 3),
+('20', '2022-03-15', 1),
+('3', '2022-03-13', 1),
+('8', '2022-03-15', 1);
 
 -- --------------------------------------------------------
 
@@ -61,7 +90,6 @@ INSERT INTO commande (id, dateCommande, montant) VALUES
 -- Structure de la table commandedocument
 --
 
-DROP TABLE IF EXISTS commandedocument;
 CREATE TABLE commandedocument (
   id varchar(5) NOT NULL,
   nbExemplaire int DEFAULT NULL,
@@ -74,8 +102,46 @@ CREATE TABLE commandedocument (
 --
 
 INSERT INTO commandedocument (id, nbExemplaire, idLivreDvd, idSuivi) VALUES
-('1', 1, '00001', '00004'),
-('2', 1, '00003', '00003');
+('1', 2, '00001', '00002'),
+('10', 1, '20003', '00001'),
+('14', 1, '20003', '00001'),
+('15', 1, '20003', '00001'),
+('2', 1, '00003', '00003'),
+('20', 1, '00003', '00001'),
+('3', 1, '20001', '00001'),
+('8', 1, '20003', '00001');
+
+--
+-- Déclencheurs commandedocument
+--
+DELIMITER $$
+CREATE TRIGGER `creerExemplaires` AFTER UPDATE ON `commandedocument` FOR EACH ROW BEGIN  
+    DECLARE nb INTEGER;
+    DECLARE dateCmd DATE;
+    DECLARE maxnumero INTEGER;
+    DECLARE repet INTEGER;
+    DECLARE image VARCHAR(100);
+    
+    IF NEW.idSuivi = "00002" THEN
+    SELECT nbExemplaire INTO nb FROM `commandedocument` WHERE id = NEW.id;
+    SELECT dateCommande INTO dateCmd FROM `commande` WHERE id = NEW.id;
+    SELECT image INTO image FROM `document` WHERE id = NEW.idLivreDvd;
+    IF (image is NULL) THEN
+        SET image = "";
+    END IF;
+    SET repet = 0;
+    SELECT MAX(numero) INTO maxnumero FROM exemplaire WHERE id = NEW.idLivreDvd;
+            IF(maxnumero IS NULL) THEN
+                SET maxnumero = 0;
+            END IF;
+        WHILE repet < nb DO
+        	SET repet = repet + 1;
+            INSERT INTO exemplaire(id, numero, dateAchat, photo, idEtat) VALUES (NEW.idLivreDvd, maxnumero+repet, dateCmd, image, "00001");
+         END WHILE;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -83,7 +149,6 @@ INSERT INTO commandedocument (id, nbExemplaire, idLivreDvd, idSuivi) VALUES
 -- Structure de la table document
 --
 
-DROP TABLE IF EXISTS document;
 CREATE TABLE document (
   id varchar(10) NOT NULL,
   titre varchar(60) DEFAULT NULL,
@@ -146,7 +211,6 @@ INSERT INTO document (id, titre, image, idRayon, idPublic, idGenre) VALUES
 -- Structure de la table dvd
 --
 
-DROP TABLE IF EXISTS dvd;
 CREATE TABLE dvd (
   id varchar(10) NOT NULL,
   synopsis text,
@@ -170,7 +234,6 @@ INSERT INTO dvd (id, synopsis, realisateur, duree) VALUES
 -- Structure de la table etat
 --
 
-DROP TABLE IF EXISTS etat;
 CREATE TABLE etat (
   id char(5) NOT NULL,
   libelle varchar(20) DEFAULT NULL
@@ -192,7 +255,6 @@ INSERT INTO etat (id, libelle) VALUES
 -- Structure de la table exemplaire
 --
 
-DROP TABLE IF EXISTS exemplaire;
 CREATE TABLE exemplaire (
   id varchar(10) NOT NULL,
   numero int NOT NULL,
@@ -206,11 +268,14 @@ CREATE TABLE exemplaire (
 --
 
 INSERT INTO exemplaire (id, numero, dateAchat, photo, idEtat) VALUES
+('00001', 1, '2022-03-09', '', '00001'),
+('00001', 2, '2022-03-09', '', '00001'),
 ('10002', 418, '2021-12-01', '', '00001'),
 ('10007', 3237, '2021-11-23', '', '00001'),
 ('10007', 3238, '2021-11-30', '', '00001'),
 ('10007', 3239, '2021-12-07', '', '00001'),
 ('10007', 3240, '2021-12-21', '', '00001'),
+('10011', 418, '2022-03-14', '', '00001'),
 ('10011', 506, '2021-04-01', '', '00001'),
 ('10011', 507, '2021-05-03', '', '00001'),
 ('10011', 508, '2021-06-05', '', '00001'),
@@ -228,7 +293,6 @@ INSERT INTO exemplaire (id, numero, dateAchat, photo, idEtat) VALUES
 -- Structure de la table genre
 --
 
-DROP TABLE IF EXISTS genre;
 CREATE TABLE genre (
   id varchar(5) NOT NULL,
   libelle varchar(20) DEFAULT NULL
@@ -265,7 +329,6 @@ INSERT INTO genre (id, libelle) VALUES
 -- Structure de la table livre
 --
 
-DROP TABLE IF EXISTS livre;
 CREATE TABLE livre (
   id varchar(10) NOT NULL,
   ISBN varchar(13) DEFAULT NULL,
@@ -311,7 +374,6 @@ INSERT INTO livre (id, ISBN, auteur, collection) VALUES
 -- Structure de la table livres_dvd
 --
 
-DROP TABLE IF EXISTS livres_dvd;
 CREATE TABLE livres_dvd (
   id varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -358,7 +420,6 @@ INSERT INTO livres_dvd (id) VALUES
 -- Structure de la table public
 --
 
-DROP TABLE IF EXISTS public;
 CREATE TABLE public (
   id varchar(5) NOT NULL,
   libelle varchar(50) DEFAULT NULL
@@ -380,7 +441,6 @@ INSERT INTO public (id, libelle) VALUES
 -- Structure de la table rayon
 --
 
-DROP TABLE IF EXISTS rayon;
 CREATE TABLE rayon (
   id char(5) NOT NULL,
   libelle varchar(30) DEFAULT NULL
@@ -413,7 +473,6 @@ INSERT INTO rayon (id, libelle) VALUES
 -- Structure de la table revue
 --
 
-DROP TABLE IF EXISTS revue;
 CREATE TABLE revue (
   id varchar(10) NOT NULL,
   empruntable tinyint(1) DEFAULT NULL,
@@ -444,7 +503,6 @@ INSERT INTO revue (id, empruntable, periodicite, delaiMiseADispo) VALUES
 -- Structure de la table suivi
 --
 
-DROP TABLE IF EXISTS suivi;
 CREATE TABLE suivi (
   id varchar(5) NOT NULL,
   libelle varchar(50) NOT NULL
