@@ -217,7 +217,7 @@ namespace Mediatek86.vue
             this.txbLivresTitreCommande = new System.Windows.Forms.TextBox();
             this.txbLivresNumeroCommande = new System.Windows.Forms.TextBox();
             this.label57 = new System.Windows.Forms.Label();
-            this.pcbLivresImageCommande = new System.Windows.Forms.PictureBox();
+            this.picLivresCommande = new System.Windows.Forms.PictureBox();
             this.label58 = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
             this.label60 = new System.Windows.Forms.Label();
@@ -347,7 +347,7 @@ namespace Mediatek86.vue
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLivresListeCommande)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbLivresImageCommande)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivresCommande)).BeginInit();
             this.tabGestionCmdDvd.SuspendLayout();
             this.grpModifCommandeDVD.SuspendLayout();
             this.grpAjoutCommandeDVD.SuspendLayout();
@@ -2250,7 +2250,7 @@ namespace Mediatek86.vue
             this.groupBox1.Controls.Add(this.txbLivresTitreCommande);
             this.groupBox1.Controls.Add(this.txbLivresNumeroCommande);
             this.groupBox1.Controls.Add(this.label57);
-            this.groupBox1.Controls.Add(this.pcbLivresImageCommande);
+            this.groupBox1.Controls.Add(this.picLivresCommande);
             this.groupBox1.Controls.Add(this.label58);
             this.groupBox1.Controls.Add(this.label59);
             this.groupBox1.Controls.Add(this.label60);
@@ -2348,14 +2348,14 @@ namespace Mediatek86.vue
             this.label57.TabIndex = 22;
             this.label57.Text = "Genre :";
             // 
-            // pcbLivresImageCommande
+            // picLivresCommande
             // 
-            this.pcbLivresImageCommande.Location = new System.Drawing.Point(560, 19);
-            this.pcbLivresImageCommande.Name = "pcbLivresImageCommande";
-            this.pcbLivresImageCommande.Size = new System.Drawing.Size(284, 210);
-            this.pcbLivresImageCommande.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pcbLivresImageCommande.TabIndex = 21;
-            this.pcbLivresImageCommande.TabStop = false;
+            this.picLivresCommande.Location = new System.Drawing.Point(560, 19);
+            this.picLivresCommande.Name = "picLivresCommande";
+            this.picLivresCommande.Size = new System.Drawing.Size(284, 210);
+            this.picLivresCommande.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLivresCommande.TabIndex = 21;
+            this.picLivresCommande.TabStop = false;
             // 
             // label58
             // 
@@ -2743,6 +2743,7 @@ namespace Mediatek86.vue
             this.dgvDVDListeCommande.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDVDListeCommande.Size = new System.Drawing.Size(844, 200);
             this.dgvDVDListeCommande.TabIndex = 4;
+            this.dgvDVDListeCommande.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvDVDListeCommande_ColumnHeaderMouseClick);
             this.dgvDVDListeCommande.SelectionChanged += new System.EventHandler(this.dgvDVDListeCommande_SelectionChanged);
             // 
             // groupBox6
@@ -3169,6 +3170,7 @@ namespace Mediatek86.vue
             this.dgvRevues.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvRevues.Size = new System.Drawing.Size(844, 200);
             this.dgvRevues.TabIndex = 4;
+            this.dgvRevues.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvRevues_ColumnHeaderMouseClick);
             this.dgvRevues.SelectionChanged += new System.EventHandler(this.dgvRevues_SelectionChanged);
             // 
             // groupBox3
@@ -3423,7 +3425,7 @@ namespace Mediatek86.vue
             ((System.ComponentModel.ISupportInitialize)(this.dgvLivresListeCommande)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbLivresImageCommande)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivresCommande)).EndInit();
             this.tabGestionCmdDvd.ResumeLayout(false);
             this.grpModifCommandeDVD.ResumeLayout(false);
             this.grpModifCommandeDVD.PerformLayout();
@@ -3613,7 +3615,7 @@ namespace Mediatek86.vue
         private System.Windows.Forms.TextBox txbLivresTitreCommande;
         private System.Windows.Forms.TextBox txbLivresNumeroCommande;
         private System.Windows.Forms.Label label57;
-        private System.Windows.Forms.PictureBox pcbLivresImageCommande;
+        private System.Windows.Forms.PictureBox picLivresCommande;
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label60;

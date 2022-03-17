@@ -1434,11 +1434,11 @@ namespace Mediatek86.vue
             txbLivresImageCommande.Text = image;
             try
             {
-                pcbLivresImageCommande.Image = Image.FromFile(image);
+                picLivresCommande.Image = Image.FromFile(image);
             }
             catch
             {
-                pcbLivresImageCommande.Image = null;
+                picLivresCommande.Image = null;
             }
         }
 
@@ -1455,7 +1455,7 @@ namespace Mediatek86.vue
             txbLivresPublicCommande.Text = "";
             txbLivresRayonCommande.Text = "";
             txbLivresImageCommande.Text = "";
-            pcbLivresImageCommande = null;
+            picLivresCommande = null;
         }
 
         /// <summary>
@@ -2187,11 +2187,11 @@ namespace Mediatek86.vue
         private void tabGestionCmdRevues_Enter(object sender, EventArgs e)
         {
             lesAbonnementsRevues = controle.GetAbonnementsRevues();
-            bdgCommandesListeRevues.DataSource = lesAbonnementsRevues;
             lesCommandesLivre = controle.GetCommandesLivres();
             bdgCommandesListeLivres.DataSource = lesCommandesLivre;
             lesCommandesDvd = controle.GetCommandesDvd();
             bdgCommandesListeDvd.DataSource = lesCommandesDvd;
+            InitDataGridViewRevueAbonnement();
             RemplirComboBoxRevueAbonnement();
             VideAjtAbonnementInfos();
             BloquerAjoutModif();
@@ -2209,19 +2209,37 @@ namespace Mediatek86.vue
                 else
                 {
                     MessageBox.Show("Numéro introuvable");
-                    dgvRevues.DataSource = null;
+                    InitDataGridViewRevueAbonnement();
                 }
             }
             else
             {
-                dgvRevues.DataSource = null;
+                InitDataGridViewRevueAbonnement();
             }
         }
+        private void InitDataGridViewRevueAbonnement()
+        {
+            List<CommandeRevue> abonnements = controle.GetAbonnementsRevues();
+            bdgCommandesListeRevues.DataSource = abonnements;
+            dgvRevues.DataSource = bdgCommandesListeRevues;
+            dgvRevues.Columns["Id"].Visible = false;
+            dgvRevues.Columns["IdRevue"].Visible = false;
+            dgvRevues.Columns["Empruntable"].Visible = false;
+            dgvRevues.Columns["Titre"].Visible = false;
+            dgvRevues.Columns["Periodicite"].Visible = false;
+            dgvRevues.Columns["DelaiMiseDispo"].Visible = false;
+            dgvRevues.Columns["Genre"].Visible = false;
+            dgvRevues.Columns["Public"].Visible = false;
+            dgvRevues.Columns["Rayon"].Visible = false;
+            dgvRevues.Columns["Image"].Visible = false;
 
+            dgvRevues.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
         private void InitDataGridViewRechercheRevueCommande(List<CommandeRevue> revues)
         {
-            dgvRevues.DataSource = revues;
-            //dgvRevues.Columns["Id"].Visible = false;
+            bdgCommandesListeRevues.DataSource = revues;
+            dgvRevues.DataSource = bdgCommandesListeRevues;
+            dgvRevues.Columns["Id"].Visible = false;
             dgvRevues.Columns["IdRevue"].Visible = false;
             dgvRevues.Columns["Empruntable"].Visible = false;
             dgvRevues.Columns["Titre"].Visible = false;
@@ -2353,6 +2371,7 @@ namespace Mediatek86.vue
             string revueId = ((Revue)bdgRevuesListe.List[bdgRevuesListe.Position]).Id;
             bool resultat = controle.CreerAbonnement(idCommande, montant, dateDebutAbonnement, dateFinAbonnement, revueId);
             lesAbonnementsRevues = controle.GetAbonnementsRevues();
+            InitDataGridViewRevueAbonnement();
             grpAjtAbonnement.Enabled = false;
             VideAjtAbonnementInfos();
 
@@ -2402,8 +2421,7 @@ namespace Mediatek86.vue
         }
         #endregion
 
-
-        private void dgvLivresListeCommande_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void dgvRevues_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             VideRevueAbonnementInfos();
             string titreColonne = dgvRevues.Columns[e.ColumnIndex].HeaderText;
@@ -2411,16 +2429,62 @@ namespace Mediatek86.vue
             switch (titreColonne)
             {
                 case "DateDeCommande":
-                    sortedList = lesAbonnementsRevues.OrderBy(o => o.DateDeCommande).ToList();
+                    sortedList = lesAbonnementsRevues.OrderByDescending(o => o.DateDeCommande).ToList();
                     break;
                 case "DateDeFinAbonnement":
-                    sortedList = lesAbonnementsRevues.OrderBy(o => o.DateDeFinAbonnement).ToList();
+                    sortedList = lesAbonnementsRevues.OrderByDescending(o => o.DateDeFinAbonnement).ToList();
                     break;
                 case "Montant":
-                    sortedList = lesAbonnementsRevues.OrderBy(o => o.Montant).ToList();
+                    sortedList = lesAbonnementsRevues.OrderByDescending(o => o.Montant).ToList();
                     break;
             }
             InitDataGridViewRechercheRevueCommande(sortedList);
+        }
+
+        private void dgvDVDListeCommande_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            VideDVDCommandeInfos();
+            string titreColonne = dgvLivresListeCommande.Columns[e.ColumnIndex].HeaderText;
+            List<CommandeDocumentDvd> sortedList = new List<CommandeDocumentDvd>();
+            switch (titreColonne)
+            {
+                case "DateDeCommande":
+                    sortedList = lesCommandesDvd.OrderByDescending(o => o.DateDeCommande).ToList();
+                    break;
+                case "Montant":
+                    sortedList = lesCommandesDvd.OrderByDescending(o => o.Montant).ToList();
+                    break;
+                case "NombreExemplaire":
+                    sortedList = lesCommandesDvd.OrderByDescending(o => o.NombreExemplaire).ToList();
+                    break;
+                case "Etat":
+                    sortedList = lesCommandesDvd.OrderByDescending(o => o.Etat).ToList();
+                    break;
+            }
+            InitDataGridViewRechercheDVDCommande(sortedList);
+        }
+
+        private void dgvLivresListeCommande_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            VideLivresCommandeInfos();
+            string titreColonne = dgvLivresListeCommande.Columns[e.ColumnIndex].HeaderText;
+            List<CommandeDocumentLivre> sortedList = new List<CommandeDocumentLivre>();
+            switch (titreColonne)
+            {
+                case "DateDeCommande":
+                    sortedList = lesCommandesLivre.OrderByDescending(o => o.DateDeCommande).ToList();
+                    break;
+                case "Montant":
+                    sortedList = lesCommandesLivre.OrderByDescending(o => o.Montant).ToList();
+                    break;
+                case "NombreExemplaire":
+                    sortedList = lesCommandesLivre.OrderByDescending(o => o.NombreExemplaire).ToList();
+                    break;
+                case "Etat":
+                    sortedList = lesCommandesLivre.OrderByDescending(o => o.Etat).ToList();
+                    break;
+            }
+            InitDataGridViewRechercheLivreCommande(sortedList);
         }
     }
 }
