@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : mer. 16 mars 2022 à 21:06
+-- Généré le : jeu. 17 mars 2022 à 12:54
 -- Version du serveur : 8.0.27
 -- Version de PHP : 7.4.26
 
@@ -55,7 +55,10 @@ CREATE TABLE abonnement (
 --
 
 INSERT INTO abonnement (id, dateFinAbonnement, idRevue) VALUES
-('18', '2022-03-17', '10011');
+('18', '2022-03-17', '10011'),
+('44', '2022-03-01', '10011'),
+('56', '2022-03-27', '10002'),
+('65', '2022-03-19', '10002');
 
 -- --------------------------------------------------------
 
@@ -75,13 +78,16 @@ CREATE TABLE commande (
 
 INSERT INTO commande (id, dateCommande, montant) VALUES
 ('1', '2022-03-09', 1),
-('10', '2022-03-15', 1),
+('100', '2022-03-17', 1),
 ('14', '2022-03-15', 1),
 ('15', '2022-03-15', 1),
 ('18', '2017-03-01', 1),
-('2', '2022-03-11', 3),
+('2', '2022-03-11', 1),
 ('20', '2022-03-15', 1),
 ('3', '2022-03-13', 1),
+('44', '2022-03-25', 5),
+('56', '2022-03-17', 2),
+('65', '2022-03-17', 2),
 ('8', '2022-03-15', 1);
 
 -- --------------------------------------------------------
@@ -103,7 +109,7 @@ CREATE TABLE commandedocument (
 
 INSERT INTO commandedocument (id, nbExemplaire, idLivreDvd, idSuivi) VALUES
 ('1', 2, '00001', '00002'),
-('10', 1, '20003', '00001'),
+('100', 1, '00017', '00001'),
 ('14', 1, '20003', '00001'),
 ('15', 1, '20003', '00001'),
 ('2', 1, '00003', '00003'),
@@ -500,6 +506,26 @@ INSERT INTO revue (id, empruntable, periodicite, delaiMiseADispo) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table service
+--
+
+CREATE TABLE service (
+  id int NOT NULL,
+  nom varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table service
+--
+
+INSERT INTO service (id, nom) VALUES
+(1, 'Administratif'),
+(2, 'Prets'),
+(3, 'Culture');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table suivi
 --
 
@@ -517,6 +543,28 @@ INSERT INTO suivi (id, libelle) VALUES
 ('00002', 'Livrée.'),
 ('00003', 'Réglée.'),
 ('00004', 'Relancée.');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table utilisateur
+--
+
+CREATE TABLE utilisateur (
+  id int NOT NULL,
+  identifiant varchar(40) NOT NULL,
+  mdp varchar(100) NOT NULL,
+  service int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table utilisateur
+--
+
+INSERT INTO utilisateur (id, identifiant, mdp, service) VALUES
+(1, 'admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 1),
+(2, 'prets', '4637eb5417aa0e63949340eb18586c865a3b113dd0e0e4933a11bec1333deefd', 2),
+(3, 'culture', 'f1947f79fdfb8046150959ca09cdd05cb53672ad4c0f49a87bbc7cddf5c91293', 3);
 
 --
 -- Index pour les tables déchargées
@@ -608,10 +656,39 @@ ALTER TABLE revue
   ADD PRIMARY KEY (id);
 
 --
+-- Index pour la table service
+--
+ALTER TABLE service
+  ADD PRIMARY KEY (id);
+
+--
 -- Index pour la table suivi
 --
 ALTER TABLE suivi
   ADD PRIMARY KEY (id);
+
+--
+-- Index pour la table utilisateur
+--
+ALTER TABLE utilisateur
+  ADD PRIMARY KEY (id),
+  ADD KEY service (service);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table service
+--
+ALTER TABLE service
+  MODIFY id int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table utilisateur
+--
+ALTER TABLE utilisateur
+  MODIFY id int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Contraintes pour les tables déchargées
@@ -670,6 +747,12 @@ ALTER TABLE livres_dvd
 --
 ALTER TABLE revue
   ADD CONSTRAINT revue_ibfk_1 FOREIGN KEY (id) REFERENCES document (id);
+
+--
+-- Contraintes pour la table utilisateur
+--
+ALTER TABLE utilisateur
+  ADD CONSTRAINT utilisateur_ibfk_1 FOREIGN KEY (service) REFERENCES service (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
