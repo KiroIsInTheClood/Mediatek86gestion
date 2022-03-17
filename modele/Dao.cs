@@ -591,7 +591,7 @@ namespace Mediatek86.modele
                 curs.Close();
                 return true;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return false;
             }
@@ -624,7 +624,7 @@ namespace Mediatek86.modele
         /// Ne s'execute qu'une fois au démarrage
         /// </summary>
         /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
-        public static string GetAbonnementsSub30Days()
+        /*public static string GetAbonnementsSub30Days()
         {
             //Fonctionne sans cette partie
             if (nb == 0)
@@ -651,6 +651,28 @@ namespace Mediatek86.modele
                 }
             }
             else { return ""; }
+        }*/
+
+        public static Service ControleAuthentification(string identifiant, string mdp) 
+        { 
+            string req = "SELECT service FROM utilisateur u ";
+            req += "WHERE u.identifiant = @identifiant AND u.mdp = SHA2(@mdp, 256)";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@identifiant", identifiant);
+            parameters.Add("@mdp", mdp);
+            BddMySql curs = BddMySql.GetInstance(connectionString);
+            curs.ReqSelect(req, parameters);
+            if (curs.Read())
+            {
+                Service service = new Service((int)curs.Field("service"));
+                curs.Close();
+                return service;
+            }
+            else
+            {
+                curs.Close();
+                return null;
+            }
         }
     }
 }

@@ -28,8 +28,8 @@ namespace Mediatek86.controleur
             lesRayons = Dao.GetAllRayons();
             lesPublics = Dao.GetAllPublics();
             lesSuivis = Dao.GetAllSuivis();
-            FrmMediatek frmMediatek = new FrmMediatek(this);
-            frmMediatek.ShowDialog();
+            FrmAuth frmAuth = new FrmAuth(this);
+            frmAuth.ShowDialog();
         }
 
         /// <summary>
@@ -229,10 +229,16 @@ namespace Mediatek86.controleur
         /// Ne s'execute qu'une fois au démarrage
         /// </summary>
         /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
-        public string GetAbonnementsSub30Days()
+        /*public string GetAbonnementsSub30Days()
         {
             string procedure = Dao.GetAbonnementsSub30Days();
             return procedure;
+        }*/
+
+        public Service ControleAuthentification(string identifiant, string mdp)
+        {
+            Service service = Dao.ControleAuthentification(identifiant, mdp);
+            return service;
         }
     }
 }

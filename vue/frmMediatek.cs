@@ -5,8 +5,6 @@ using Mediatek86.metier;
 using Mediatek86.controleur;
 using System.Drawing;
 using System.Linq;
-using Mediatek86.modele;
-using System.Text;
 
 namespace Mediatek86.vue
 {
@@ -36,6 +34,7 @@ namespace Mediatek86.vue
         private List<Dvd> lesDvd = new List<Dvd>();
         private List<Revue> lesRevues = new List<Revue>();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
+        private Service service;
 
         private bool ajoutCommandeLivre = false;
         private bool modifCommandeLivre = false;
@@ -44,10 +43,11 @@ namespace Mediatek86.vue
         #endregion
 
 
-        internal FrmMediatek(Controle controle)
+        internal FrmMediatek(Controle controle, Service service)
         {
             InitializeComponent();
             this.controle = controle;
+            this.service = service;
         }
 
 
@@ -415,18 +415,24 @@ namespace Mediatek86.vue
         /// <param name="e"></param>
         private void TabLivres_Enter(object sender, EventArgs e)
         {
+            if(service.ServiceInt == 2) //Service pret
+            {
+                dgvLivresListeGestion.TabPages.RemoveByKey("tabReceptionRevue");
+                dgvLivresListeGestion.TabPages.RemoveByKey("tabGestionLivres");
+                dgvLivresListeGestion.TabPages.RemoveByKey("tabGestionCmdDvd");
+                dgvLivresListeGestion.TabPages.RemoveByKey("tabGestionCmdRevues");
+            }
             lesLivres = controle.GetAllLivres();
             RemplirComboCategorie(controle.GetAllGenres(), bdgGenres, cbxLivresGenres);
             RemplirComboCategorie(controle.GetAllPublics(), bdgPublics, cbxLivresPublics);
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
             BloquerAjoutModif();
-            string procedure = controle.GetAbonnementsSub30Days();
+            /*string procedure = controle.GetAbonnementsSub30Days();
             if (procedure != "")
             {
                 MessageBox.Show(procedure, "Abonnements finissants dans moins de 30 jours");
-            }
-            //dgvLivresListeGestion.TabPages.RemoveByKey("nomdutab");
+            }*/
         }
 
         /// <summary>
@@ -2190,11 +2196,9 @@ namespace Mediatek86.vue
             VideAjtAbonnementInfos();
             BloquerAjoutModif();
         }
-        #endregion
-
         private void btnRechercheRevue_Click(object sender, EventArgs e)
         {
-            if(txbNumRevue.Text != "")
+            if (txbNumRevue.Text != "")
             {
                 List<CommandeRevue> revue = lesAbonnementsRevues.FindAll(x => x.IdRevue.Equals(txbNumRevue.Text));
                 txbNumRevue.Text = "";
@@ -2217,7 +2221,7 @@ namespace Mediatek86.vue
         private void InitDataGridViewRechercheRevueCommande(List<CommandeRevue> revues)
         {
             dgvRevues.DataSource = revues;
-            dgvRevues.Columns["Id"].Visible = false;
+            //dgvRevues.Columns["Id"].Visible = false;
             dgvRevues.Columns["IdRevue"].Visible = false;
             dgvRevues.Columns["Empruntable"].Visible = false;
             dgvRevues.Columns["Titre"].Visible = false;
@@ -2247,7 +2251,7 @@ namespace Mediatek86.vue
             }
             else
             {
-                VideRevueCommandeInfos();
+                VideRevueAbonnementInfos();
             }
         }
         private void AfficheRevueCommandeInfos(CommandeRevue revue)
@@ -2272,7 +2276,7 @@ namespace Mediatek86.vue
             }
         }
 
-        private void VideRevueCommandeInfos()
+        private void VideRevueAbonnementInfos()
         {
             txbNumeroRevue.Text = "";
             cbRevue.Checked = false;
@@ -2319,17 +2323,17 @@ namespace Mediatek86.vue
 
         private void btnAjtFiniRevue_Click(object sender, EventArgs e)
         {
-            if(txbIdCommande.Text == "" || cbxRevue.SelectedIndex == -1 || montantRevue.Value < 1)
+            if (txbIdCommande.Text == "" || cbxRevue.SelectedIndex == -1 || montantRevue.Value < 1)
             {
                 MessageBox.Show("Tout les champs doivent etre remplis", "Erreur");
                 return;
             }
-            if(dtpDebutRevue.Value < DateTime.Today || dptFinRevue.Value < DateTime.Today)
+            if (dtpDebutRevue.Value < DateTime.Today || dptFinRevue.Value < DateTime.Today)
             {
                 MessageBox.Show("L'une des deux dates est inferieur a la date du jour", "Erreur");
                 return;
             }
-            if(dtpDebutRevue.Value >= dptFinRevue.Value)
+            if (dtpDebutRevue.Value >= dptFinRevue.Value)
             {
                 MessageBox.Show("La date de debut d'abonnement est supérieure ou égale a la date de fin", "Erreur");
                 return;
@@ -2349,7 +2353,6 @@ namespace Mediatek86.vue
             string revueId = ((Revue)bdgRevuesListe.List[bdgRevuesListe.Position]).Id;
             bool resultat = controle.CreerAbonnement(idCommande, montant, dateDebutAbonnement, dateFinAbonnement, revueId);
             lesAbonnementsRevues = controle.GetAbonnementsRevues();
-            InitDataGridViewRechercheRevueCommande(lesAbonnementsRevues.FindAll(x => x.IdRevue.Equals(revueId)));
             grpAjtAbonnement.Enabled = false;
             VideAjtAbonnementInfos();
 
@@ -2391,15 +2394,33 @@ namespace Mediatek86.vue
                     MessageBox.Show("Une erreur est survenue", "Erreur");
                 }
             }
-            else if (dialogResult == DialogResult.No)
-            {
-                return;
-            }
         }
 
         private bool ParutionDansAbonnement(DateTime dateCommande, DateTime dateFinAbonnement, DateTime dateParution)
         {
             return (dateParution > dateCommande && dateParution < dateFinAbonnement);
+        }
+        #endregion
+
+
+        private void dgvLivresListeCommande_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            VideRevueAbonnementInfos();
+            string titreColonne = dgvRevues.Columns[e.ColumnIndex].HeaderText;
+            List<CommandeRevue> sortedList = new List<CommandeRevue>();
+            switch (titreColonne)
+            {
+                case "DateDeCommande":
+                    sortedList = lesAbonnementsRevues.OrderBy(o => o.DateDeCommande).ToList();
+                    break;
+                case "DateDeFinAbonnement":
+                    sortedList = lesAbonnementsRevues.OrderBy(o => o.DateDeFinAbonnement).ToList();
+                    break;
+                case "Montant":
+                    sortedList = lesAbonnementsRevues.OrderBy(o => o.Montant).ToList();
+                    break;
+            }
+            InitDataGridViewRechercheRevueCommande(sortedList);
         }
     }
 }
