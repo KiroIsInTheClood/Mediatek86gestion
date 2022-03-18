@@ -693,7 +693,7 @@ namespace Mediatek86.modele
             }
             else
             {
-                Log.Information("Echec de la connexion pour le nom d'utilisateur : {0}", identifiant);
+                Log.Error("Echec de la connexion pour le nom d'utilisateur : {0}", identifiant);
                 curs.Close();
                 return null;
             }
