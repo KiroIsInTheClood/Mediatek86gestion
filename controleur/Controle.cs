@@ -236,11 +236,11 @@ namespace Mediatek86.controleur
         /// Ne s'execute qu'une fois au démarrage
         /// </summary>
         /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
-        /*public string GetAbonnementsSub30Days()
+        public string GetAbonnementsSub30Days()
         {
             string procedure = Dao.GetAbonnementsSub30Days();
             return procedure;
-        }*/
+        }
 
         /// <summary>
         /// Check si le combo identifiant mdp est valide pour se connecter

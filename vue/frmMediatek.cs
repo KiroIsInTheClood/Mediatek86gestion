@@ -60,7 +60,7 @@ namespace Mediatek86.vue
         /// <param name="lesCategories"></param>
         /// <param name="bdg"></param>
         /// <param name="cbx"></param>
-        public void RemplirComboCategorie(List<Categorie> lesCategories, BindingSource bdg, ComboBox cbx)
+        private void RemplirComboCategorie(List<Categorie> lesCategories, BindingSource bdg, ComboBox cbx)
         {
             bdg.DataSource = lesCategories;
             cbx.DataSource = bdg;
@@ -429,11 +429,11 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
             BloquerAjoutModif();
-            /*string procedure = controle.GetAbonnementsSub30Days();
+            string procedure = controle.GetAbonnementsSub30Days();
             if (procedure != "")
             {
                 MessageBox.Show(procedure, "Abonnements finissants dans moins de 30 jours");
-            }*/
+            }
         }
 
         /// <summary>
@@ -1489,7 +1489,7 @@ namespace Mediatek86.vue
         /// <summary>
         /// Remplit les ComboBox correspondantes avec les tout les Livres et Etats possibles
         /// </summary>
-        public void RemplirComboBoxLivresCommande()
+        private void RemplirComboBoxLivresCommande()
         {
             List<Livre> livres = controle.GetAllLivres();
             bdgLivresListe.DataSource = livres;
@@ -1511,7 +1511,7 @@ namespace Mediatek86.vue
         /// <summary>
         /// Disable les groupes et met les booleans a false
         /// </summary>
-        public void BloquerAjtModifCommandeLivres()
+        private void BloquerAjtModifCommandeLivres()
         {
             grpAjoutLivreCommande.Enabled = false;
             grpModifLivreCommande.Enabled = false;
@@ -1877,7 +1877,7 @@ namespace Mediatek86.vue
         /// <summary>
         /// Bloque les GroupeBox et set les booleans a false
         /// </summary>
-        public void BloquerAjtModifCommandeDVD()
+        private void BloquerAjtModifCommandeDVD()
         {
             grpAjoutCommandeDVD.Enabled = false;
             grpModifCommandeDVD.Enabled = false;
@@ -2512,13 +2512,9 @@ namespace Mediatek86.vue
             AbonnementRevue abonnement = (AbonnementRevue)bdgAbonnementsListeRevues.List[bdgAbonnementsListeRevues.Position];
             List<Exemplaire> exemplaires = controle.GetExemplairesRevue(abonnement.IdRevue);
 
-            foreach (Exemplaire exemplaire in exemplaires)
+            foreach (var exemplaire in exemplaires.Where(x => ParutionDansAbonnement(abonnement.DateDeCommande, abonnement.DateDeFinAbonnement, x.DateAchat)))
             {
-                if (ParutionDansAbonnement(abonnement.DateDeCommande, abonnement.DateDeFinAbonnement, exemplaire.DateAchat))
-                {
-                    exist = true;
-                    break;
-                }
+                exist = true;
             }
 
             if (exist)

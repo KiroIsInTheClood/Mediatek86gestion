@@ -637,20 +637,20 @@ namespace Mediatek86.modele
         /// Ne s'execute qu'une fois au démarrage
         /// </summary>
         /// <returns>String comportant toutes les infos a afficher dans une MessageBox</returns>
-        /*public static string GetAbonnementsSub30Days()
+        public static string GetAbonnementsSub30Days()
         {
             //Fonctionne sans cette partie
             if (nb == 0)
             {
                 try
                 {
-                    string req = "SELECT `abonnementsEnDessousTrentreJours`() AS `abonnementsEnDessousTrentreJours`;";
+                    string req = "SELECT abonnementsEnDessousTrentreJours() AS string;";
                     BddMySql curs = BddMySql.GetInstance(connectionString);
-                    curs.ReqUpdate(req, null);
+                    curs.ReqSelect(req, null);
                     string procedure = "";
                     while (curs.Read())
                     {
-                        procedure = (string)curs.Field("abonnementsEnDessousTrentreJours");
+                        procedure = (string)curs.Field("string");
                     }
                     nb++;
                     return procedure;
@@ -664,7 +664,7 @@ namespace Mediatek86.modele
             else { 
                 return ""; 
             }
-        }*/
+        }
 
         /// <summary>
         /// Check si le combo identifiant mdp est valide pour se connecter
