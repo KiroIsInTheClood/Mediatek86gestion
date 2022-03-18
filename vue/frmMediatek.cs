@@ -44,7 +44,7 @@ namespace Mediatek86.vue
         #endregion
 
 
-        internal FrmMediatek(Controle controle, Service service)
+        public FrmMediatek(Controle controle, Service service)
         {
             InitializeComponent();
             this.controle = controle;
@@ -2543,7 +2543,7 @@ namespace Mediatek86.vue
         /// <param name="dateFinAbonnement"></param>
         /// <param name="dateParution"></param>
         /// <returns></returns>
-        private bool ParutionDansAbonnement(DateTime dateCommande, DateTime dateFinAbonnement, DateTime dateParution)
+        public bool ParutionDansAbonnement(DateTime dateCommande, DateTime dateFinAbonnement, DateTime dateParution)
         {
             return (dateParution > dateCommande && dateParution < dateFinAbonnement);
         }
