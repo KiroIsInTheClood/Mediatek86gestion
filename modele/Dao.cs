@@ -1,5 +1,6 @@
 ﻿using Mediatek86.bdd;
 using Mediatek86.metier;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -258,7 +259,8 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 curs.Close();
                 return true;
-            } catch {
+            } catch (Exception e) {
+                Log.Error("Echec lors de l'ajout d'un exemplaire à la BDD\nErreur: {0}", e);
                 return false;
             }
         }
@@ -312,6 +314,7 @@ namespace Mediatek86.modele
             }
             catch (Exception e)
             {
+                Log.Error("Echec lors de la recupération des commandes de livres depuis la BDD\nErreur: {0}", e);
                 return lesCommandes;
             }
         }
@@ -343,6 +346,7 @@ namespace Mediatek86.modele
             }
             catch (Exception e)
             {
+                Log.Error("Echec lors de la recupération des suivis depuis la BDD\nErreur: {0}", e);
                 return lesSuivis;
             }
         }
@@ -365,8 +369,9 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch
+            } catch (Exception e)
             {
+                Log.Error("Echec lors de la modification d'une commande de Livre ou de DVD\nErreur: {0}", e);
                 return false;
             }
         }
@@ -390,8 +395,9 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch
+            } catch (Exception e)
             {
+                Log.Error("Echec lors de la création de la commande/abonnement dans la table commande\nErreur: {0}", e);
                 return false;
             }
         }
@@ -416,8 +422,9 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch
+            } catch (Exception e)
             {
+                Log.Error("Echec lors de la création de la commande dans la table commandedocument\nErreur: {0}", e);
                 return false;
             }
         }
@@ -437,8 +444,9 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Log.Error("Echec lors de la suppression de la commande dans la table commandedocument\nErreur: {0}", e);
                 return false;
             }
         }
@@ -458,8 +466,9 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Log.Error("Echec lors de la suppression de la commande dans la table commande\nErreur: {0}", e);
                 return false;
             }
         }
@@ -514,6 +523,7 @@ namespace Mediatek86.modele
             }
             catch (Exception e)
             {
+                Log.Error("Echec lors de la recupération des DVDs depuis la BDD\nErreur: {0}", e);
                 return lesCommandes;
             }
         }
@@ -565,6 +575,7 @@ namespace Mediatek86.modele
             }
             catch (Exception e)
             {
+                Log.Error("Echec lors de la récupération des abonnements de revues depuis la BDD\nErreur: {0}", e);
                 return lesCommandes;
             }
         }
@@ -591,8 +602,9 @@ namespace Mediatek86.modele
                 curs.Close();
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error("Echec lors de la création de l'abonnement dans la table abonnement\nErreur: {0}", e);
                 return false;
             }
         }
@@ -612,8 +624,9 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Log.Error("Echec lors de la suppression de l'abonnement dans la table abonnement\nErreur: {0}", e);
                 return false;
             }
         }
@@ -631,18 +644,16 @@ namespace Mediatek86.modele
             {
                 try
                 {
-                    string req = "CALL abonnementsEnDessousTrentreJours;";
+                    string req = "SELECT `abonnementsEnDessousTrentreJours`() AS `abonnementsEnDessousTrentreJours`;";
                     BddMySql curs = BddMySql.GetInstance(connectionString);
-                    curs.ReqSelect(req, null);
-                    StringBuilder procedure = new StringBuilder("");
+                    curs.ReqUpdate(req, null);
+                    string procedure = "";
                     while (curs.Read())
                     {
-                        string titre = (string)curs.Field("titre");
-                        string date = curs.Field("dateFinAbonnement").ToString().Substring(0, 10);
-                        procedure.Append($"{titre} - {date}\n");
+                        procedure = (string)curs.Field("abonnementsEnDessousTrentreJours");
                     }
                     nb++;
-                    return procedure.ToString();
+                    return procedure;
                 }
                 catch
                 {
@@ -650,7 +661,9 @@ namespace Mediatek86.modele
                     return "";
                 }
             }
-            else { return ""; }
+            else { 
+                return ""; 
+            }
         }*/
 
         /// <summary>
@@ -663,7 +676,8 @@ namespace Mediatek86.modele
         /// <param name="mdp"></param>
         public static Service ControleAuthentification(string identifiant, string mdp) 
         { 
-            string req = "SELECT service FROM utilisateur u ";
+            string req = "SELECT identifiant, service, s.nom FROM utilisateur u ";
+            req += "LEFT JOIN service s on s.id = u.service ";
             req += "WHERE u.identifiant = @identifiant AND u.mdp = SHA2(@mdp, 256)";
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@identifiant", identifiant);
@@ -672,12 +686,14 @@ namespace Mediatek86.modele
             curs.ReqSelect(req, parameters);
             if (curs.Read())
             {
-                Service service = new Service((int)curs.Field("service"));
+                Service service = new Service((string)curs.Field("identifiant"), (int)curs.Field("service"), (string)curs.Field("nom"));
+                Log.Information("L'utilisateur {0} s'est connecté (Appartenant au service {1})", service.Utilisateur, service.Nom);
                 curs.Close();
                 return service;
             }
             else
             {
+                Log.Information("Echec de la connexion pour le nom d'utilisateur : {0}", identifiant);
                 curs.Close();
                 return null;
             }

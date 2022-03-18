@@ -3,6 +3,7 @@ using Mediatek86.modele;
 using Mediatek86.metier;
 using Mediatek86.vue;
 using System;
+using Serilog;
 
 namespace Mediatek86.controleur
 {
@@ -21,6 +22,12 @@ namespace Mediatek86.controleur
         /// </summary>
         public Controle()
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File("logs/logs-.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+
             lesLivres = Dao.GetAllLivres();
             lesDvd = Dao.GetAllDvd();
             lesRevues = Dao.GetAllRevues();
