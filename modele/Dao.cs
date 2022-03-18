@@ -519,15 +519,15 @@ namespace Mediatek86.modele
         }
 
         /// <summary>
-        /// Permet d'obtenir toutes les revues afin de les afficher dans une ComboBox
+        /// Permet d'obtenir tout les abonnements dans une List
         /// </summary>
-        /// <returns>Une liste comportant toutes les revues</returns>
-        public static List<CommandeRevue> GetAbonnementsRevues()
+        /// <returns>Une liste comportant tout les abonnenements</returns>
+        public static List<AbonnementRevue> GetAbonnementsRevues()
         {
-            List<CommandeRevue> lesCommandes = null;
+            List<AbonnementRevue> lesCommandes = null;
             try
             {
-                lesCommandes = new List<CommandeRevue>();
+                lesCommandes = new List<AbonnementRevue>();
                 string req = "SELECT c.id, c.dateCommande, a.dateFinAbonnement, a.idRevue, r.empruntable, d.titre, r.periodicite, r.delaiMiseADispo as delai, g.libelle as genre, p.libelle as public, ra.libelle as rayon, d.image, c.montant ";
                 req += "FROM commande c ";
                 req += "LEFT JOIN abonnement a USING(id) ";
@@ -543,7 +543,7 @@ namespace Mediatek86.modele
 
                 while (curs.Read())
                 {
-                    CommandeRevue commandeDocument = new CommandeRevue(
+                    AbonnementRevue commandeDocument = new AbonnementRevue(
                         (string)curs.Field("id"),
                         (DateTime)curs.Field("dateCommande"),
                         (DateTime)curs.Field("dateFinAbonnement"),
@@ -653,6 +653,14 @@ namespace Mediatek86.modele
             else { return ""; }
         }*/
 
+        /// <summary>
+        /// Check si le combo identifiant mdp est valide pour se connecter
+        /// 
+        /// Si oui return l'id du service
+        /// Si non return null;
+        /// </summary>
+        /// <param name="identifiant"></param>
+        /// <param name="mdp"></param>
         public static Service ControleAuthentification(string identifiant, string mdp) 
         { 
             string req = "SELECT service FROM utilisateur u ";

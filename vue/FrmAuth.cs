@@ -21,6 +21,11 @@ namespace Mediatek86.vue
             this.controle = controle;
         }
 
+        /// <summary>
+        /// Permet d'effectuer (ou non) la connexion
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnConnexion_Click(object sender, EventArgs e)
         {
             if(txtIdentifiant.Text.Equals("") || txtMDP.Text.Equals(""))

@@ -183,9 +183,9 @@ namespace Mediatek86.controleur
         /// Recupère tout les abonnements aux revues dans la base de données
         /// </summary>
         /// <returns>La liste contenant toutes les abonnements</returns>
-        public List<CommandeRevue> GetAbonnementsRevues()
+        public List<AbonnementRevue> GetAbonnementsRevues()
         {
-            List<CommandeRevue> lesAbonnementsRevues;
+            List<AbonnementRevue> lesAbonnementsRevues;
             lesAbonnementsRevues = Dao.GetAbonnementsRevues();
             return lesAbonnementsRevues;
         }
@@ -235,6 +235,14 @@ namespace Mediatek86.controleur
             return procedure;
         }*/
 
+        /// <summary>
+        /// Check si le combo identifiant mdp est valide pour se connecter
+        /// 
+        /// Si oui return l'id du service
+        /// Si non return null;
+        /// </summary>
+        /// <param name="identifiant"></param>
+        /// <param name="mdp"></param>
         public Service ControleAuthentification(string identifiant, string mdp)
         {
             Service service = Dao.ControleAuthentification(identifiant, mdp);

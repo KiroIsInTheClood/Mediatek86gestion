@@ -92,7 +92,7 @@
     <Compile Include="controleur\Controle.cs" />
     <Compile Include="metier\CommandeDocumentDvd.cs" />
     <Compile Include="metier\Commande.cs" />
-    <Compile Include="metier\CommandeRevue.cs" />
+    <Compile Include="metier\AbonnementRevue.cs" />
     <Compile Include="metier\Suivi.cs" />
     <Compile Include="metier\CommandeDocumentLivre.cs" />
     <Compile Include="metier\Dvd.cs" />

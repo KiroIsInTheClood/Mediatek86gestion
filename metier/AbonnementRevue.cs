@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mediatek86.metier
 {
-    public class CommandeRevue
+    public class AbonnementRevue
     {
         private readonly string id;
         private readonly DateTime dateCommande;
@@ -22,7 +22,7 @@ namespace Mediatek86.metier
         private readonly string image;
         private readonly double montant;
 
-        public CommandeRevue(string id, DateTime dateCommande, DateTime dateFinAbonnement, string idRevue,
+        public AbonnementRevue(string id, DateTime dateCommande, DateTime dateFinAbonnement, string idRevue,
             bool empruntable, string titre, string periodicite, int delaiMiseDispo, string genre, string publicdoc, string rayon,
             string image, double montant)
         {

@@ -43,7 +43,7 @@ namespace Mediatek86.vue
             this.btnConnexion.Location = new System.Drawing.Point(213, 113);
             this.btnConnexion.Name = "btnConnexion";
             this.btnConnexion.Size = new System.Drawing.Size(188, 33);
-            this.btnConnexion.TabIndex = 0;
+            this.btnConnexion.TabIndex = 2;
             this.btnConnexion.Text = "Se connecter";
             this.btnConnexion.UseVisualStyleBackColor = true;
             this.btnConnexion.Click += new System.EventHandler(this.btnConnexion_Click);
@@ -72,7 +72,7 @@ namespace Mediatek86.vue
             this.txtIdentifiant.Location = new System.Drawing.Point(133, 29);
             this.txtIdentifiant.Name = "txtIdentifiant";
             this.txtIdentifiant.Size = new System.Drawing.Size(268, 26);
-            this.txtIdentifiant.TabIndex = 3;
+            this.txtIdentifiant.TabIndex = 0;
             // 
             // txtMDP
             // 
@@ -81,7 +81,7 @@ namespace Mediatek86.vue
             this.txtMDP.Name = "txtMDP";
             this.txtMDP.PasswordChar = '*';
             this.txtMDP.Size = new System.Drawing.Size(268, 26);
-            this.txtMDP.TabIndex = 5;
+            this.txtMDP.TabIndex = 1;
             // 
             // label3
             // 
@@ -104,8 +104,10 @@ namespace Mediatek86.vue
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnConnexion);
+            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FrmAuth";
-            this.Text = "FrmAuth";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Connexion";
             this.ResumeLayout(false);
             this.PerformLayout();
 
