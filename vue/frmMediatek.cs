@@ -1762,6 +1762,7 @@ namespace Mediatek86.vue
             VideLivresCommandeInfos();
             string titreColonne = dgvLivresListeCommande.Columns[e.ColumnIndex].HeaderText;
             List<CommandeDocumentLivre> sortedList = new List<CommandeDocumentLivre>();
+            lesCommandesLivre = controle.GetCommandesLivres();
             switch (titreColonne)
             {
                 case "DateDeCommande":
@@ -2220,6 +2221,7 @@ namespace Mediatek86.vue
             VideDVDCommandeInfos();
             string titreColonne = dgvLivresListeCommande.Columns[e.ColumnIndex].HeaderText;
             List<CommandeDocumentDvd> sortedList = new List<CommandeDocumentDvd>();
+            lesCommandesDvd = controle.GetCommandesDvd();
             switch (titreColonne)
             {
                 case "DateDeCommande":
@@ -2559,6 +2561,7 @@ namespace Mediatek86.vue
             VideRevueAbonnementInfos();
             string titreColonne = dgvRevues.Columns[e.ColumnIndex].HeaderText;
             List<AbonnementRevue> sortedList = new List<AbonnementRevue>();
+            lesAbonnementsRevues = controle.GetAbonnementsRevues();
             switch (titreColonne)
             {
                 case "DateDeCommande":
