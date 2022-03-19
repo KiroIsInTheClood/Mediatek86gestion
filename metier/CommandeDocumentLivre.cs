@@ -41,8 +41,8 @@ namespace Mediatek86.metier
         /// <param name="publicdoc"></param>
         /// <param name="rayon"></param>
         /// <param name="image"></param>
-        public CommandeDocumentLivre(string id, DateTime date, double montant, int nombreExemplaire, 
-            string idLivDVD, string idSuivi, string libelleSuivi, string isbn, string titre, 
+        public CommandeDocumentLivre(string id, DateTime date, double montant, int nombreExemplaire,
+            string idLivDVD, string idSuivi, string libelleSuivi, string isbn, string titre,
             string auteur, string collection, string genre, string publicdoc, string rayon, string image)
         {
             this.id = id;

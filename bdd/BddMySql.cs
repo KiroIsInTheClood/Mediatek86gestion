@@ -1,7 +1,7 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace Mediatek86.bdd
 {
@@ -11,7 +11,7 @@ namespace Mediatek86.bdd
         /// Unique instance de la classe
         /// </summary>
         private static BddMySql instance = null;
-        
+
         /// <summary>
         /// objet de connexion à la BDD à partir d'une chaîne de connexion
         /// </summary>
@@ -60,7 +60,7 @@ namespace Mediatek86.bdd
         public void ReqSelect(string stringQuery, Dictionary<string, object> parameters)
         {
             MySqlCommand command;
-            
+
             try
             {
                 command = new MySqlCommand(stringQuery, connection);

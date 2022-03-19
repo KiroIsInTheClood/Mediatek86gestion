@@ -3,8 +3,6 @@ using Mediatek86.metier;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Mediatek86.modele
 {
@@ -259,7 +257,9 @@ namespace Mediatek86.modele
                 curs.ReqUpdate(req, parameters);
                 curs.Close();
                 return true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Log.Error("Echec lors de l'ajout d'un exemplaire à la BDD\nErreur: {0}", e);
                 return false;
             }
@@ -269,7 +269,8 @@ namespace Mediatek86.modele
         /// Permet d'obtenir toutes les infos liées a une commande (Livre)
         /// </summary>
         /// <returns>La List contenant toutes les infos de chaque commande (Livre)</returns>
-        public static List<CommandeDocumentLivre> GetCommandesLivres() {
+        public static List<CommandeDocumentLivre> GetCommandesLivres()
+        {
             List<CommandeDocumentLivre> lesCommandes = null;
             try
             {
@@ -369,7 +370,8 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Echec lors de la modification d'une commande de Livre ou de DVD\nErreur: {0}", e);
                 return false;
@@ -395,7 +397,8 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Echec lors de la création de la commande/abonnement dans la table commande\nErreur: {0}", e);
                 return false;
@@ -422,7 +425,8 @@ namespace Mediatek86.modele
                 BddMySql curs = BddMySql.GetInstance(connectionString);
                 curs.ReqUpdate(req, parameters);
                 return true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Echec lors de la création de la commande dans la table commandedocument\nErreur: {0}", e);
                 return false;
@@ -661,8 +665,9 @@ namespace Mediatek86.modele
                     return "";
                 }
             }
-            else { 
-                return ""; 
+            else
+            {
+                return "";
             }
         }
 
@@ -674,8 +679,8 @@ namespace Mediatek86.modele
         /// </summary>
         /// <param name="identifiant"></param>
         /// <param name="mdp"></param>
-        public static Service ControleAuthentification(string identifiant, string mdp) 
-        { 
+        public static Service ControleAuthentification(string identifiant, string mdp)
+        {
             string req = "SELECT identifiant, service, s.nom FROM utilisateur u ";
             req += "LEFT JOIN service s on s.id = u.service ";
             req += "WHERE u.identifiant = @identifiant AND u.mdp = SHA2(@mdp, 256)";
