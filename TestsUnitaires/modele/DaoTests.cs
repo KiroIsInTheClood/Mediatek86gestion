@@ -16,16 +16,26 @@ namespace Mediatek86.modele.Tests
         private static readonly string database = "mediatek86";
         private static readonly string connectionString = "server=" + server + ";user id=" + userid + ";password=" + password + ";database=" + database + ";SslMode=none";
         private readonly BddMySql curs = BddMySql.GetInstance(connectionString);
+
+        /// <summary>
+        /// Permet de ne pas affecter la BDD
+        /// </summary>
         private void BeginTransaction()
         {
             curs.ReqUpdate("SET AUTOCOMMIT=0", null);
         }
 
+        /// <summary>
+        /// Rollback les changements pour ne pas affecter la BDD
+        /// </summary>
         private void EndTransaction()
         {
             curs.ReqUpdate("ROLLBACK", null);
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les genres
+        /// </summary>
         [TestMethod()]
         public void GetAllGenresTest()
         {
@@ -33,6 +43,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesGenres.Count != 0, "devrait réussir : au moins un genre");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les rayons
+        /// </summary>
         [TestMethod()]
         public void GetAllRayonsTest()
         {
@@ -40,6 +53,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesRayons.Count != 0, "devrait réussir : au moins un rayon");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les publics
+        /// </summary>
         [TestMethod()]
         public void GetAllPublicsTest()
         {
@@ -47,6 +63,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesPublics.Count != 0, "devrait réussir : au moins un public");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les livres
+        /// </summary>
         [TestMethod()]
         public void GetAllLivresTest()
         {
@@ -54,6 +73,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesLivres.Count != 0, "devrait réussir : au moins un livre");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les DVDs
+        /// </summary>
         [TestMethod()]
         public void GetAllDvdTest()
         {
@@ -61,6 +83,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesDVDs.Count != 0, "devrait réussir : au moins un DVD");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les Revues
+        /// </summary>
         [TestMethod()]
         public void GetAllRevuesTest()
         {
@@ -68,6 +93,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesRevues.Count != 0, "devrait réussir : au moins une revue");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer l'exemplaire correspondant a un ID donné
+        /// </summary>
         [TestMethod()]
         public void GetExemplairesRevueTest()
         {
@@ -101,6 +129,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les commandes de Livres/DVDs
+        /// </summary>
         [TestMethod()]
         public void GetCommandesLivresTest()
         {
@@ -108,6 +139,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesCommandesLivres.Count != 0, "devrait réussir : au moins une commande de livre");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer tout les suivis
+        /// </summary>
         [TestMethod()]
         public void GetAllSuivisTest()
         {
@@ -115,6 +149,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesSuivis.Count != 0, "devrait réussir : au moins une etape de suivi existe");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de verifier que la methode de modification de Livres/DVDs fonctionne
+        /// </summary>
         [TestMethod()]
         public void ModifierCommandeLivreDVDTest()
         {
@@ -170,6 +207,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de verifier que la methode de création de commande fonctionne
+        /// </summary>
         [TestMethod()]
         public void CreerCommandeTest()
         {
@@ -218,6 +258,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de verifier que la methode de création de commande fonctionne
+        /// </summary>
         [TestMethod()]
         public void CreerCommandeDocument2Test()
         {
@@ -265,6 +308,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de verifier que la methode de suppression de commande fonctionne
+        /// </summary>
         [TestMethod()]
         public void SupprimerCommandeTest()
         {
@@ -287,6 +333,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de verifier que la methode de suppression de commande fonctionne
+        /// </summary>
         [TestMethod()]
         public void SupprimerCommande2Test()
         {
@@ -309,6 +358,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les DVDs
+        /// </summary>
         [TestMethod()]
         public void GetCommandesDvdTest()
         {
@@ -316,6 +368,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesCommandesDVDs.Count != 0, "devrait réussir : au moins une commande de DVD");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de recuperer les abonnements
+        /// </summary>
         [TestMethod()]
         public void GetAbonnementsRevuesTest()
         {
@@ -323,6 +378,9 @@ namespace Mediatek86.modele.Tests
             Assert.IsTrue(lesAbonnementsRevues.Count != 0, "devrait réussir : au moins un abonnement de revue");
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de tester la methode de création d'abonnement
+        /// </summary>
         [TestMethod()]
         public void CreerAbonnementTest()
         {
@@ -365,6 +423,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de tester la methode de suppression d'abonnement
+        /// </summary>
         [TestMethod()]
         public void SupprimerAbonnementTest()
         {
@@ -386,6 +447,9 @@ namespace Mediatek86.modele.Tests
             EndTransaction();
         }
 
+        /// <summary>
+        /// Test unitaire sur la fonction permettant de tester la methode de connexion a l'application
+        /// </summary>
         [TestMethod()]
         public void ControleAuthentificationTest()
         {
