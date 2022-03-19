@@ -648,13 +648,14 @@ namespace Mediatek86.modele
             {
                 try
                 {
-                    string req = "SELECT abonnementsEnDessousTrentreJours() AS string;";
+                    string req = "SELECT abonnementsEnDessousTrentreJours() AS resultat;";
                     BddMySql curs = BddMySql.GetInstance(connectionString);
                     curs.ReqSelect(req, null);
                     string procedure = "";
                     while (curs.Read())
                     {
-                        procedure = (string)curs.Field("string");
+                        procedure = (string)curs.Field("resultat");
+                        procedure = procedure.Replace(" retourALaLigne ", "\n");
                     }
                     nb++;
                     return procedure;
