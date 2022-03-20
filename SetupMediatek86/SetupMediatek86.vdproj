@@ -1138,7 +1138,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_714CBBFC32E36F69113BBA6DD134369A"
+        "OwnerKey" = "8:_64655557ADE94814B1AE1FF6D479FF4C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1888,12 +1888,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_64655557ADE94814B1AE1FF6D479FF4C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_4E54DF9D81DCF0CC5991700E23727DE4"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1993,6 +1987,12 @@
         "OwnerKey" = "8:_0FF885E68CA3BDDD221F8D503D5D79D3"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_714CBBFC32E36F69113BBA6DD134369A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -2011,6 +2011,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -2027,6 +2035,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -7084,7 +7100,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_64655557ADE94814B1AE1FF6D479FF4C"
             {
-            "SourcePath" = "8:..\\obj\\Debug\\Mediatek86.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_354CBB0C50474DCA8039516BD37D9147"
@@ -7112,7 +7128,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CEC0751D1F2F4CAF8D838D5337A7AE85"
             {
-            "SourcePath" = "8:..\\TestsUnitaires\\obj\\Debug\\TestsUnitaires.dll"
+            "SourcePath" = "8:..\\TestsUnitaires\\obj\\Release\\TestsUnitaires.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_354CBB0C50474DCA8039516BD37D9147"
