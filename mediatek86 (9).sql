@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 18 mars 2022 à 16:58
+-- Généré le : sam. 19 mars 2022 à 20:22
 -- Version du serveur : 8.0.27
 -- Version de PHP : 7.4.26
 
@@ -40,7 +40,7 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `abonnementsEnDessousTrentreJours` ()
     OPEN curs;
     FETCH curs INTO titre, dateFin;
     WHILE(fin<>1) DO
-        SET string = CONCAT(string, titre, " - ", dateFin, "\n");
+        SET string = CONCAT(string, titre, " - ", dateFin, " retourALaLigne ");
         FETCH NEXT FROM curs INTO titre, dateFin;
     END WHILE;
     CLOSE curs;
@@ -122,7 +122,7 @@ CREATE TABLE commandedocument (
 --
 
 INSERT INTO commandedocument (id, nbExemplaire, idLivreDvd, idSuivi) VALUES
-('1', 2, '00001', '00002'),
+('1', 1, '00001', '00002'),
 ('14', 1, '20003', '00001'),
 ('15', 1, '20003', '00001'),
 ('2', 1, '00003', '00003'),
@@ -288,6 +288,7 @@ CREATE TABLE exemplaire (
 INSERT INTO exemplaire (id, numero, dateAchat, photo, idEtat) VALUES
 ('00001', 1, '2022-03-09', '', '00001'),
 ('00001', 2, '2022-03-09', '', '00001'),
+('00001', 3, '2022-03-09', '', '00001'),
 ('10002', 418, '2021-12-01', '', '00001'),
 ('10007', 3237, '2021-11-23', '', '00001'),
 ('10007', 3238, '2021-11-30', '', '00001'),

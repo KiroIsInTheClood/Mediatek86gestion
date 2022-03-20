@@ -1,9 +1,9 @@
-﻿using Mediatek86.metier;
+﻿using System.Collections.Generic;
 using Mediatek86.modele;
+using Mediatek86.metier;
 using Mediatek86.vue;
-using Serilog;
 using System;
-using System.Collections.Generic;
+using Serilog;
 
 namespace Mediatek86.controleur
 {

@@ -1,6 +1,13 @@
 ﻿using Mediatek86.controleur;
 using Mediatek86.metier;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mediatek86.vue
@@ -21,7 +28,7 @@ namespace Mediatek86.vue
         /// <param name="e"></param>
         private void btnConnexion_Click(object sender, EventArgs e)
         {
-            if (txtIdentifiant.Text.Equals("") || txtMDP.Text.Equals(""))
+            if(txtIdentifiant.Text.Equals("") || txtMDP.Text.Equals(""))
             {
                 MessageBox.Show("Tous les champs doivent etre remplis", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;

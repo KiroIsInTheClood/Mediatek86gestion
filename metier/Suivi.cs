@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Mediatek86.metier
 {
@@ -49,7 +54,7 @@ namespace Mediatek86.metier
         /// <returns></returns>
         public static Suivi LibelleCmd(string id)
         {
-            foreach (Suivi suivi in SuiviItems)
+            foreach(Suivi suivi in SuiviItems)
             {
                 if (suivi.Id == id) return suivi;
             }
