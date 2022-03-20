@@ -10,7 +10,7 @@ namespace Mediatek86.modele.Tests
     [TestClass()]
     public class DaoTests
     {
-        private static readonly string server = "152.228.131.141:3306";
+        private static readonly string server = "152.228.131.141";
         private static readonly string userid = "syna";
         private static readonly string password = "yNjJaSMAGs%6KSQ4orj4yymAVz^u";
         private static readonly string database = "mediatek86";
