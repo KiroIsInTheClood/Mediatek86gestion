@@ -2182,7 +2182,7 @@ namespace Mediatek86.vue
             // 
             // btnSupprimerCommandeLivres
             // 
-            this.btnSupprimerCommandeLivres.Location = new System.Drawing.Point(753, 12);
+            this.btnSupprimerCommandeLivres.Location = new System.Drawing.Point(752, 12);
             this.btnSupprimerCommandeLivres.Name = "btnSupprimerCommandeLivres";
             this.btnSupprimerCommandeLivres.Size = new System.Drawing.Size(100, 23);
             this.btnSupprimerCommandeLivres.TabIndex = 48;
