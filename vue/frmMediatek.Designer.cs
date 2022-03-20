@@ -2640,9 +2640,9 @@ namespace Mediatek86.vue
             this.label80.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label80.Location = new System.Drawing.Point(8, 22);
             this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(114, 13);
+            this.label80.Size = new System.Drawing.Size(11, 10);
             this.label80.TabIndex = 36;
-            this.label80.Text = "Id de la commande";
+            this.label80.Text = "q";
             // 
             // txtDVDIdCommandeAjout
             // 
@@ -2958,7 +2958,7 @@ namespace Mediatek86.vue
             this.tabGestionCmdRevues.Padding = new System.Windows.Forms.Padding(3);
             this.tabGestionCmdRevues.Size = new System.Drawing.Size(875, 633);
             this.tabGestionCmdRevues.TabIndex = 7;
-            this.tabGestionCmdRevues.Text = "Gestion des commandes (Revues)";
+            this.tabGestionCmdRevues.Text = "Gestion des abonnements (Revues)";
             this.tabGestionCmdRevues.UseVisualStyleBackColor = true;
             this.tabGestionCmdRevues.Enter += new System.EventHandler(this.tabGestionCmdRevues_Enter);
             // 
