@@ -1553,7 +1553,7 @@ namespace Mediatek86.vue
 
             if (dgvLivresListeCommande.CurrentCell != null)
             {
-                CommandeDocumentDvd laCommande = (CommandeDocumentDvd)bdgCommandesListeDvd.List[bdgCommandesListeDvd.Position];
+                CommandeDocumentLivre laCommande = (CommandeDocumentLivre)bdgCommandesListeLivres.List[bdgCommandesListeLivres.Position];
 
                 if (laCommande.Etat == "Réglée.")
                 {
@@ -1568,10 +1568,10 @@ namespace Mediatek86.vue
                 {
                     grpAjoutCommandeDVD.Enabled = false;
                     ajoutCommandeDVD = false;
-                    ViderAjouterCommandeDVD();
+                    ViderAjouterCommandeLivre();
                 }
 
-                RemplirModifCommandeDVD(laCommande);
+                RemplirModifCommandeLivre(laCommande);
             }
             else
             {
@@ -1610,6 +1610,8 @@ namespace Mediatek86.vue
 
             bool resultat = controle.ModifierCommandeLivreDVD(laCommande.Id, suiviId);
             InitDataGridViewLivreCommande();
+            lesCommandesLivre = controle.GetCommandesLivres();
+            bdgCommandesListeLivres.DataSource = controle.GetCommandesLivres();
             ViderEditCommandeLivre();
             modifCommandeLivre = false;
             grpModifLivreCommande.Enabled = false;
@@ -2156,9 +2158,12 @@ namespace Mediatek86.vue
                 return;
             }
 
+            lesCommandesDvd = controle.GetCommandesDvd();
+            bdgCommandesListeDvd.DataSource = controle.GetCommandesDvd();
             controle.ModifierCommandeLivreDVD(laCommande.Id, suiviId);
             InitDataGridViewDVDCommande();
             ViderEditCommandeDVD();
+
             modifCommandeDVD = false;
             grpModifCommandeDVD.Enabled = false;
         }

@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace Mediatek86.modele
 {
+    /// <summary>
+    /// Classe Dao
+    /// </summary>
     public static class Dao
     {
         private static int nb = 0;
