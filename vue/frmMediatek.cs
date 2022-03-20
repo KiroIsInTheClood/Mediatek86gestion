@@ -428,10 +428,13 @@ namespace Mediatek86.vue
             RemplirComboCategorie(controle.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
             BloquerAjoutModif();
-            string procedure = controle.GetAbonnementsSub30Days();
-            if (procedure != "")
+            if(service.ServiceInt == 1)
             {
-                MessageBox.Show(procedure, "Abonnements finissants dans moins de 30 jours");
+                string procedure = controle.GetAbonnementsSub30Days();
+                if (procedure != "")
+                {
+                    MessageBox.Show(procedure, "Abonnements finissants dans moins de 30 jours");
+                }
             }
         }
 
