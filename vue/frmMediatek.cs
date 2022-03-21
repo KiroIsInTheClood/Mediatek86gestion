@@ -2534,7 +2534,7 @@ namespace Mediatek86.vue
             if (dialogResult == DialogResult.Yes)
             {
                 bool resultat = controle.SupprimerAbonnnement(abonnement.Id);
-                dgvRevues.DataSource = null;
+                InitDataGridViewRevueAbonnement();
 
                 if (!resultat)
                 {

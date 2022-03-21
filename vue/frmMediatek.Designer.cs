@@ -2640,9 +2640,9 @@ namespace Mediatek86.vue
             this.label80.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label80.Location = new System.Drawing.Point(8, 22);
             this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(11, 10);
+            this.label80.Size = new System.Drawing.Size(118, 13);
             this.label80.TabIndex = 36;
-            this.label80.Text = "q";
+            this.label80.Text = "Id de la commande ";
             // 
             // txtDVDIdCommandeAjout
             // 
